@@ -1,0 +1,654 @@
+/* ============================================
+   Debt Mate - Components CSS
+   ملف تصميم المكونات (الرسوم البيانية، المعاملات، التنبيهات)
+   ============================================ */
+
+/* ============================================
+   1. Charts Section - قسم الرسوم البيانية
+   ============================================ */
+.charts-section {
+    display: grid;
+    grid-template-columns: 400px 1fr;
+    gap: var(--spacing-lg);
+    margin-bottom: var(--spacing-xl);
+}
+
+.chart-card {
+    background: var(--gradient-card);
+    padding: var(--spacing-lg);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(223, 182, 178, 0.1);
+    transition: all var(--transition-normal);
+}
+
+.chart-card:hover {
+    box-shadow: var(--shadow-lg), var(--shadow-glow);
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--spacing-lg);
+}
+
+.card-header h3 {
+    font-size: 1.2rem;
+    color: var(--color-cream);
+    font-weight: 600;
+}
+
+.btn-more {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: rgba(223, 182, 178, 0.1);
+    border: none;
+    color: var(--color-cream);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.btn-more:hover {
+    background: rgba(223, 182, 178, 0.2);
+    transform: rotate(90deg);
+}
+
+/* Progress Chart - الرسم الدائري */
+.progress-chart {
+    display: flex;
+    flex-direction: column;
+}
+
+.chart-container {
+    position: relative;
+    height: 250px;
+    margin-bottom: var(--spacing-md);
+}
+
+.chart-center-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+}
+
+.chart-center-text h2 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--color-cream);
+    margin-bottom: 4px;
+}
+
+.chart-center-text p {
+    color: var(--color-soft-rose);
+    font-size: 0.9rem;
+}
+
+.chart-legend {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    font-size: 0.9rem;
+    color: var(--color-soft-rose);
+}
+
+.legend-color {
+    width: 16px;
+    height: 16px;
+    border-radius: 4px;
+}
+
+.legend-color.paid {
+    background: var(--color-success);
+}
+
+.legend-color.remaining {
+    background: var(--color-warning);
+}
+
+/* Line Chart - الرسم الخطي */
+.line-chart .chart-container {
+    height: 300px;
+}
+
+.time-filter {
+    display: flex;
+    gap: var(--spacing-xs);
+    background: rgba(0, 0, 0, 0.2);
+    padding: 4px;
+    border-radius: var(--radius-md);
+}
+
+.time-filter button {
+    padding: 6px 16px;
+    background: transparent;
+    border: none;
+    color: var(--color-soft-rose);
+    cursor: pointer;
+    border-radius: var(--radius-sm);
+    font-size: 0.85rem;
+    transition: all var(--transition-fast);
+    font-family: 'Cairo', sans-serif;
+}
+
+.time-filter button:hover {
+    background: rgba(223, 182, 178, 0.1);
+}
+
+.time-filter button.active {
+    background: var(--color-medium-purple);
+    color: var(--color-cream);
+}
+
+/* ============================================
+   2. Info Section - المعاملات والتنبيهات
+   ============================================ */
+.info-section {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--spacing-lg);
+    margin-bottom: var(--spacing-xl);
+}
+
+.info-card {
+    background: var(--gradient-card);
+    padding: var(--spacing-lg);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(223, 182, 178, 0.1);
+}
+
+.info-card .card-header {
+    margin-bottom: var(--spacing-md);
+}
+
+.link-more {
+    color: var(--color-soft-rose);
+    text-decoration: none;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    transition: all var(--transition-fast);
+}
+
+.link-more:hover {
+    color: var(--color-cream);
+    gap: 8px;
+}
+
+.badge-count {
+    background: var(--color-danger);
+    color: white;
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+/* ============================================
+   3. Transactions List - قائمة المعاملات
+   ============================================ */
+.transactions-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+    max-height: 400px;
+    overflow-y: auto;
+    padding-left: 4px;
+}
+
+/* Custom Scrollbar */
+.transactions-list::-webkit-scrollbar {
+    width: 6px;
+}
+
+.transactions-list::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 10px;
+}
+
+.transactions-list::-webkit-scrollbar-thumb {
+    background: var(--color-medium-purple);
+    border-radius: 10px;
+}
+
+.transactions-list::-webkit-scrollbar-thumb:hover {
+    background: var(--color-light-purple);
+}
+
+.transaction-item {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-sm);
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: var(--radius-md);
+    transition: all var(--transition-fast);
+    cursor: pointer;
+}
+
+.transaction-item:hover {
+    background: rgba(0, 0, 0, 0.3);
+    transform: translateX(-5px);
+}
+
+.transaction-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    flex-shrink: 0;
+}
+
+.transaction-icon.paid {
+    background: rgba(76, 175, 80, 0.2);
+    color: var(--color-success);
+}
+
+.transaction-icon.new {
+    background: rgba(255, 152, 0, 0.2);
+    color: var(--color-warning);
+}
+
+.transaction-details {
+    flex: 1;
+}
+
+.transaction-details h4 {
+    font-size: 0.95rem;
+    color: var(--color-cream);
+    margin-bottom: 2px;
+}
+
+.transaction-details p {
+    font-size: 0.8rem;
+    color: var(--color-soft-rose);
+    opacity: 0.7;
+}
+
+.transaction-amount {
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+.transaction-amount.paid {
+    color: var(--color-success);
+}
+
+.transaction-amount.new {
+    color: var(--color-warning);
+}
+
+/* ============================================
+   4. Notifications List - قائمة التنبيهات
+   ============================================ */
+.notifications-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+}
+
+.notification-item {
+    display: flex;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-md);
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: var(--radius-md);
+    border-right: 3px solid transparent;
+    transition: all var(--transition-fast);
+    cursor: pointer;
+}
+
+.notification-item:hover {
+    background: rgba(0, 0, 0, 0.3);
+    transform: translateX(-5px);
+}
+
+.notification-item.urgent {
+    border-right-color: var(--color-danger);
+    background: rgba(244, 67, 54, 0.1);
+}
+
+.notification-item.warning {
+    border-right-color: var(--color-warning);
+    background: rgba(255, 152, 0, 0.1);
+}
+
+.notification-item.info {
+    border-right-color: var(--color-info);
+    background: rgba(33, 150, 243, 0.1);
+}
+
+.notification-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    flex-shrink: 0;
+}
+
+.notification-item.urgent .notification-icon {
+    background: rgba(244, 67, 54, 0.2);
+    color: var(--color-danger);
+}
+
+.notification-item.warning .notification-icon {
+    background: rgba(255, 152, 0, 0.2);
+    color: var(--color-warning);
+}
+
+.notification-item.info .notification-icon {
+    background: rgba(33, 150, 243, 0.2);
+    color: var(--color-info);
+}
+
+.notification-content {
+    flex: 1;
+}
+
+.notification-content h4 {
+    font-size: 0.95rem;
+    color: var(--color-cream);
+    margin-bottom: 4px;
+    font-weight: 600;
+}
+
+.notification-content p {
+    font-size: 0.85rem;
+    color: var(--color-soft-rose);
+    margin-bottom: 4px;
+}
+
+.notification-content .time {
+    font-size: 0.75rem;
+    color: var(--color-soft-rose);
+    opacity: 0.6;
+}
+
+/* ============================================
+   5. Upcoming Payments - الدفعات القادمة
+   ============================================ */
+.upcoming-section {
+    margin-bottom: var(--spacing-xl);
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--spacing-lg);
+}
+
+.section-header h2 {
+    font-size: 1.5rem;
+    color: var(--color-cream);
+    font-weight: 700;
+}
+
+.filter-tabs {
+    display: flex;
+    gap: var(--spacing-xs);
+    background: var(--gradient-card);
+    padding: 6px;
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-sm);
+}
+
+.filter-tabs button {
+    padding: 8px 20px;
+    background: transparent;
+    border: none;
+    color: var(--color-soft-rose);
+    cursor: pointer;
+    border-radius: var(--radius-sm);
+    font-size: 0.9rem;
+    transition: all var(--transition-fast);
+    font-family: 'Cairo', sans-serif;
+    font-weight: 500;
+}
+
+.filter-tabs button:hover {
+    background: rgba(223, 182, 178, 0.1);
+}
+
+.filter-tabs button.active {
+    background: var(--color-medium-purple);
+    color: var(--color-cream);
+    box-shadow: var(--shadow-sm);
+}
+
+.upcoming-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: var(--spacing-lg);
+}
+
+/* ============================================
+   6. Payment Cards - بطاقات الدفع
+   ============================================ */
+.payment-card {
+    background: var(--gradient-card);
+    padding: var(--spacing-lg);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(223, 182, 178, 0.1);
+    transition: all var(--transition-normal);
+    position: relative;
+    overflow: hidden;
+}
+
+.payment-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 100%;
+    height: 4px;
+    transition: height var(--transition-normal);
+}
+
+.payment-card.priority-high::before {
+    background: var(--gradient-danger);
+}
+
+.payment-card.priority-medium::before {
+    background: linear-gradient(135deg, #FF9800 0%, #FFB74D 100%);
+}
+
+.payment-card.priority-low::before {
+    background: linear-gradient(135deg, #2196F3 0%, #64B5F6 100%);
+}
+
+.payment-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-lg), var(--shadow-glow);
+}
+
+.payment-card:hover::before {
+    height: 100%;
+    opacity: 0.1;
+}
+
+.payment-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--spacing-md);
+}
+
+.payment-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    background: rgba(223, 182, 178, 0.1);
+    color: var(--color-soft-rose);
+}
+
+.priority-badge {
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.priority-badge.high {
+    background: rgba(244, 67, 54, 0.2);
+    color: var(--color-danger);
+}
+
+.priority-badge.medium {
+    background: rgba(255, 152, 0, 0.2);
+    color: var(--color-warning);
+}
+
+.priority-badge.low {
+    background: rgba(33, 150, 243, 0.2);
+    color: var(--color-info);
+}
+
+.payment-card h3 {
+    font-size: 1.1rem;
+    color: var(--color-cream);
+    margin-bottom: var(--spacing-xs);
+}
+
+.payment-amount {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--color-soft-rose);
+    margin-bottom: var(--spacing-md);
+}
+
+.payment-date {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    color: var(--color-soft-rose);
+    font-size: 0.85rem;
+    margin-bottom: var(--spacing-md);
+    opacity: 0.8;
+}
+
+.payment-progress {
+    margin-bottom: var(--spacing-md);
+}
+
+.progress-bar {
+    width: 100%;
+    height: 8px;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: var(--spacing-xs);
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--color-soft-rose) 0%, var(--color-light-purple) 100%);
+    border-radius: 10px;
+    transition: width var(--transition-slow);
+}
+
+.payment-progress span {
+    font-size: 0.8rem;
+    color: var(--color-soft-rose);
+    opacity: 0.7;
+}
+
+.btn-pay {
+    width: 100%;
+    padding: var(--spacing-sm);
+    background: var(--gradient-primary);
+    color: var(--color-cream);
+    border: none;
+    border-radius: var(--radius-md);
+    font-weight: 600;
+    cursor: pointer;
+    transition: all var(--transition-normal);
+    font-family: 'Cairo', sans-serif;
+    font-size: 0.95rem;
+}
+
+.btn-pay:hover {
+    background: var(--gradient-success);
+    transform: scale(1.02);
+    box-shadow: var(--shadow-md);
+}
+
+/* ============================================
+   7. Responsive Design للمكونات
+   ============================================ */
+@media (max-width: 1200px) {
+    .charts-section {
+        grid-template-columns: 1fr;
+    }
+    
+    .progress-chart {
+        max-width: 500px;
+        margin: 0 auto;
+    }
+}
+
+@media (max-width: 768px) {
+    .info-section {
+        grid-template-columns: 1fr;
+    }
+    
+    .upcoming-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .section-header {
+        flex-direction: column;
+        gap: var(--spacing-md);
+        align-items: flex-start;
+    }
+}
+
+@media (max-width: 576px) {
+    .chart-card {
+        padding: var(--spacing-md);
+    }
+    
+    .payment-card {
+        padding: var(--spacing-md);
+    }
+    
+    .filter-tabs {
+        width: 100%;
+        justify-content: space-between;
+    }
+    
+    .filter-tabs button {
+        flex: 1;
+        padding: 8px 12px;
+        font-size: 0.8rem;
+    }
+}
+
+a{
+    text-decoration: none;
+}

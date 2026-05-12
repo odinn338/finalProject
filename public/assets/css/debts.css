@@ -1,0 +1,740 @@
+/* ============================================
+   Debts Page - CSS
+   تصميم صفحة إدارة الديون
+   ============================================ */
+
+/* ============================================
+   1. Debts Stats Overview
+   ============================================ */
+.debts-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: var(--spacing-lg);
+    margin-bottom: var(--spacing-xl);
+}
+
+.debt-stat-card {
+    background: var(--gradient-card);
+    padding: var(--spacing-lg);
+    border-radius: var(--radius-lg);
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    box-shadow: var(--shadow-md);
+    border: 1px solid rgba(223, 182, 178, 0.1);
+    transition: all var(--transition-normal);
+}
+
+.debt-stat-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-lg);
+}
+
+.debt-stat-card .stat-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+}
+
+.debt-stat-card.total .stat-icon {
+    background: rgba(133, 79, 108, 0.2);
+    color: var(--color-soft-rose);
+}
+
+.debt-stat-card.active .stat-icon {
+    background: rgba(33, 150, 243, 0.2);
+    color: var(--color-info);
+}
+
+.debt-stat-card.paid .stat-icon {
+    background: rgba(76, 175, 80, 0.2);
+    color: var(--color-success);
+}
+
+.debt-stat-card.overdue .stat-icon {
+    background: rgba(244, 67, 54, 0.2);
+    color: var(--color-danger);
+}
+
+.stat-info h3 {
+    color: var(--color-soft-rose);
+    font-size: 0.9rem;
+    margin-bottom: 4px;
+}
+
+.stat-info .stat-number {
+    color: var(--color-cream);
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 2px;
+}
+
+.stat-info .stat-label {
+    color: var(--color-soft-rose);
+    font-size: 0.8rem;
+    opacity: 0.8;
+}
+
+/* ============================================
+   2. Filters Section
+   ============================================ */
+.filters-section {
+    background: var(--gradient-card);
+    padding: var(--spacing-lg);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
+    margin-bottom: var(--spacing-lg);
+}
+
+.search-box {
+    position: relative;
+    margin-bottom: var(--spacing-md);
+}
+
+.search-box i {
+    position: absolute;
+    right: var(--spacing-md);
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--color-soft-rose);
+    font-size: 1.1rem;
+}
+
+.search-box input {
+    width: 100%;
+    padding: var(--spacing-sm) var(--spacing-md) var(--spacing-sm) calc(var(--spacing-md) * 3);
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(223, 182, 178, 0.2);
+    border-radius: var(--radius-md);
+    color: var(--color-cream);
+    font-family: 'Cairo', sans-serif;
+    font-size: 1rem;
+    transition: all var(--transition-fast);
+}
+
+.search-box input:focus {
+    outline: none;
+    border-color: var(--color-soft-rose);
+    background: rgba(0, 0, 0, 0.4);
+}
+
+.search-box input::placeholder {
+    color: var(--color-soft-rose);
+    opacity: 0.6;
+}
+
+.filter-group {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: var(--spacing-md);
+    align-items: end;
+}
+
+.filter-item label {
+    display: block;
+    color: var(--color-soft-rose);
+    font-size: 0.9rem;
+    margin-bottom: 6px;
+}
+
+.filter-item select {
+    width: 100%;
+    padding: var(--spacing-sm) var(--spacing-md);
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(223, 182, 178, 0.2);
+    border-radius: var(--radius-sm);
+    color: var(--color-cream);
+    font-family: 'Cairo', sans-serif;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.filter-item select:focus {
+    outline: none;
+    border-color: var(--color-soft-rose);
+}
+
+.btn-reset-filters {
+    padding: var(--spacing-sm) var(--spacing-lg);
+    background: rgba(244, 67, 54, 0.2);
+    border: 1px solid var(--color-danger);
+    border-radius: var(--radius-sm);
+    color: var(--color-danger);
+    font-family: 'Cairo', sans-serif;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    justify-content: center;
+    transition: all var(--transition-fast);
+}
+
+.btn-reset-filters:hover {
+    background: rgba(244, 67, 54, 0.3);
+}
+
+/* ============================================
+   3. View Toggle Section
+   ============================================ */
+.view-toggle-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--spacing-lg);
+}
+
+.results-count {
+    color: var(--color-soft-rose);
+}
+
+.results-count strong {
+    color: var(--color-cream);
+}
+
+.view-toggle {
+    display: flex;
+    gap: var(--spacing-xs);
+    background: var(--gradient-card);
+    padding: 4px;
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-sm);
+}
+
+.view-btn {
+    padding: 8px 16px;
+    background: transparent;
+    border: none;
+    color: var(--color-soft-rose);
+    cursor: pointer;
+    border-radius: var(--radius-sm);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-family: 'Cairo', sans-serif;
+    transition: all var(--transition-fast);
+}
+
+.view-btn:hover {
+    background: rgba(223, 182, 178, 0.1);
+}
+
+.view-btn.active {
+    background: var(--color-medium-purple);
+    color: var(--color-cream);
+}
+
+/* ============================================
+   4. Debts Container - Grid View
+   ============================================ */
+.debts-container {
+    display: grid;
+    gap: var(--spacing-lg);
+    margin-bottom: var(--spacing-xl);
+}
+
+.debts-container.grid-view {
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+}
+
+.debts-container.list-view {
+    grid-template-columns: 1fr;
+}
+
+/* ============================================
+   5. Debt Card
+   ============================================ */
+.debt-card {
+    background: var(--gradient-card);
+    padding: var(--spacing-lg);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
+    border: 1px solid rgba(223, 182, 178, 0.1);
+    transition: all var(--transition-normal);
+    position: relative;
+    overflow: hidden;
+}
+
+.debt-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 100%;
+    height: 4px;
+}
+
+.debt-card[data-status="overdue"]::before {
+    background: var(--gradient-danger);
+}
+
+.debt-card[data-status="active"]::before {
+    background: linear-gradient(135deg, #2196F3 0%, #64B5F6 100%);
+}
+
+.debt-card[data-status="paid"]::before {
+    background: var(--gradient-success);
+}
+
+.debt-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-lg), var(--shadow-glow);
+}
+
+/* Card Header */
+.debt-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--spacing-md);
+}
+
+.debt-category {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.debt-category.bank {
+    background: rgba(133, 79, 108, 0.2);
+    color: var(--color-soft-rose);
+}
+
+.debt-category.bills {
+    background: rgba(33, 150, 243, 0.2);
+    color: var(--color-info);
+}
+
+.debt-category.loans {
+    background: rgba(255, 152, 0, 0.2);
+    color: var(--color-warning);
+}
+
+.debt-category.personal {
+    background: rgba(156, 39, 176, 0.2);
+    color: #CE93D8;
+}
+
+.debt-status {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.debt-status.overdue {
+    color: var(--color-danger);
+}
+
+.debt-status.active {
+    color: var(--color-info);
+}
+
+.debt-status.paid {
+    color: var(--color-success);
+}
+
+/* Card Title */
+.debt-title {
+    color: var(--color-cream);
+    font-size: 1.3rem;
+    margin-bottom: var(--spacing-md);
+    font-weight: 700;
+}
+
+/* Card Amount */
+.debt-amount {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: var(--spacing-md);
+}
+
+.amount-label {
+    color: var(--color-soft-rose);
+    font-size: 0.85rem;
+    margin-bottom: 4px;
+}
+
+.amount-value {
+    color: var(--color-cream);
+    font-size: 1.8rem;
+    font-weight: 700;
+}
+
+/* Progress Bar */
+.debt-progress {
+    margin-bottom: var(--spacing-md);
+}
+
+.progress-info {
+    display: flex;
+    justify-content: space-between;
+    color: var(--color-soft-rose);
+    font-size: 0.85rem;
+    margin-bottom: 6px;
+}
+
+.progress-bar {
+    width: 100%;
+    height: 8px;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--color-info) 0%, var(--color-soft-rose) 100%);
+    border-radius: 10px;
+    transition: width var(--transition-slow);
+}
+
+.progress-fill.complete {
+    background: var(--gradient-success);
+}
+
+/* Card Details */
+.debt-details {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: var(--spacing-md);
+    padding-top: var(--spacing-md);
+    border-top: 1px solid rgba(223, 182, 178, 0.1);
+}
+
+.detail-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--color-soft-rose);
+    font-size: 0.85rem;
+}
+
+.detail-item i {
+    width: 18px;
+}
+
+.detail-item.success {
+    color: var(--color-success);
+}
+
+/* Card Actions */
+.debt-actions {
+    display: flex;
+    gap: var(--spacing-xs);
+}
+
+.btn-action {
+    flex: 1;
+    padding: var(--spacing-sm);
+    border: none;
+    border-radius: var(--radius-sm);
+    font-family: 'Cairo', sans-serif;
+    font-weight: 600;
+    font-size: 0.85rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    transition: all var(--transition-fast);
+}
+
+.btn-pay {
+    background: var(--gradient-success);
+    color: white;
+}
+
+.btn-pay:hover {
+    transform: scale(1.05);
+}
+
+.btn-edit {
+    background: rgba(33, 150, 243, 0.2);
+    color: var(--color-info);
+}
+
+.btn-edit:hover {
+    background: rgba(33, 150, 243, 0.3);
+}
+
+.btn-delete {
+    background: rgba(244, 67, 54, 0.2);
+    color: var(--color-danger);
+}
+
+.btn-delete:hover {
+    background: rgba(244, 67, 54, 0.3);
+}
+
+.btn-view {
+    background: rgba(223, 182, 178, 0.2);
+    color: var(--color-cream);
+}
+
+.btn-view:hover {
+    background: rgba(223, 182, 178, 0.3);
+}
+
+/* ============================================
+   6. List View Styles
+   ============================================ */
+.list-view .debt-card {
+    display: grid;
+    grid-template-columns: auto 1fr auto auto;
+    gap: var(--spacing-lg);
+    align-items: center;
+    padding: var(--spacing-md) var(--spacing-lg);
+}
+
+.list-view .debt-card-header,
+.list-view .debt-amount,
+.list-view .debt-details {
+    margin-bottom: 0;
+}
+
+.list-view .debt-progress {
+    max-width: 200px;
+}
+
+.list-view .debt-actions {
+    flex-direction: row;
+    gap: var(--spacing-xs);
+}
+
+/* ============================================
+   7. Modal Styles
+   ============================================ */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(25, 0, 25, 0.8);
+    backdrop-filter: blur(5px);
+    z-index: 10000;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal.active {
+    display: flex;
+}
+
+.modal-content {
+    background: var(--gradient-card);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg);
+    width: 90%;
+    max-width: 600px;
+    max-height: 90vh;
+    overflow-y: auto;
+    animation: modalSlideIn 0.3s ease;
+}
+
+@keyframes modalSlideIn {
+    from {
+        transform: translateY(-50px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--spacing-lg);
+    border-bottom: 1px solid rgba(223, 182, 178, 0.1);
+}
+
+.modal-header h2 {
+    color: var(--color-cream);
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+}
+
+.modal-close {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: rgba(244, 67, 54, 0.2);
+    border: none;
+    color: var(--color-danger);
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.modal-close:hover {
+    background: rgba(244, 67, 54, 0.3);
+    transform: rotate(90deg);
+}
+
+.modal-body {
+    padding: var(--spacing-lg);
+}
+
+.form-group {
+    margin-bottom: var(--spacing-md);
+}
+
+.form-group label {
+    display: block;
+    color: var(--color-soft-rose);
+    font-size: 0.9rem;
+    margin-bottom: 6px;
+    font-weight: 600;
+}
+
+.required {
+    color: var(--color-danger);
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+    width: 100%;
+    padding: var(--spacing-sm) var(--spacing-md);
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(223, 182, 178, 0.2);
+    border-radius: var(--radius-sm);
+    color: var(--color-cream);
+    font-family: 'Cairo', sans-serif;
+    transition: all var(--transition-fast);
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: var(--color-soft-rose);
+    background: rgba(0, 0, 0, 0.4);
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--spacing-md);
+}
+
+.checkbox-group label {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    cursor: pointer;
+}
+
+.checkbox-group input[type="checkbox"] {
+    width: auto;
+    cursor: pointer;
+}
+
+.modal-footer {
+    display: flex;
+    gap: var(--spacing-md);
+    padding: var(--spacing-lg);
+    border-top: 1px solid rgba(223, 182, 178, 0.1);
+}
+
+.btn-cancel {
+    flex: 1;
+    padding: var(--spacing-sm) var(--spacing-lg);
+    background: rgba(244, 67, 54, 0.2);
+    border: 1px solid var(--color-danger);
+    border-radius: var(--radius-md);
+    color: var(--color-danger);
+    font-family: 'Cairo', sans-serif;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.btn-cancel:hover {
+    background: rgba(244, 67, 54, 0.3);
+}
+
+.btn-submit {
+    flex: 1;
+    padding: var(--spacing-sm) var(--spacing-lg);
+    background: var(--gradient-success);
+    border: none;
+    border-radius: var(--radius-md);
+    color: white;
+    font-family: 'Cairo', sans-serif;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-xs);
+    transition: all var(--transition-fast);
+}
+
+.btn-submit:hover {
+    transform: scale(1.02);
+}
+
+/* ============================================
+   8. Responsive Design
+   ============================================ */
+@media (max-width: 1200px) {
+    .debts-container.grid-view {
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    }
+}
+
+@media (max-width: 768px) {
+    .debts-stats {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .filter-group {
+        grid-template-columns: 1fr;
+    }
+
+    .debts-container.grid-view {
+        grid-template-columns: 1fr;
+    }
+
+    .form-row {
+        grid-template-columns: 1fr;
+    }
+
+    .view-toggle-section {
+        flex-direction: column;
+        gap: var(--spacing-md);
+    }
+}
+
+@media (max-width: 576px) {
+    .debts-stats {
+        grid-template-columns: 1fr;
+    }
+
+    .debt-actions {
+        flex-direction: column;
+    }
+
+    .modal-content {
+        width: 95%;
+    }
+}
+
+

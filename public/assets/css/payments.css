@@ -1,0 +1,698 @@
+/* ============================================
+   Payments Page - CSS
+   تصميم صفحة عمليات السداد
+   ============================================ */
+
+/* ============================================
+   1. Payment Stats
+   ============================================ */
+.payment-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: var(--spacing-lg);
+    margin-bottom: var(--spacing-xl);
+}
+
+.payment-stat-card {
+    background: var(--gradient-card);
+    padding: var(--spacing-lg);
+    border-radius: var(--radius-lg);
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    box-shadow: var(--shadow-md);
+    border: 1px solid rgba(223, 182, 178, 0.1);
+    transition: all var(--transition-normal);
+    position: relative;
+    overflow: hidden;
+}
+
+.payment-stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 100%;
+    height: 4px;
+    background: var(--gradient-success);
+}
+
+.payment-stat-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-lg);
+}
+
+.payment-stat-card .stat-icon {
+    width: 70px;
+    height: 70px;
+    border-radius: var(--radius-md);
+    background: rgba(76, 175, 80, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    color: var(--color-success);
+    flex-shrink: 0;
+}
+
+.payment-stat-card .stat-info {
+    flex: 1;
+}
+
+.payment-stat-card .stat-info h3 {
+    color: var(--color-soft-rose);
+    font-size: 0.9rem;
+    margin-bottom: 6px;
+}
+
+.payment-stat-card .stat-number {
+    color: var(--color-cream);
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 4px;
+}
+
+.payment-stat-card .stat-label {
+    color: var(--color-soft-rose);
+    font-size: 0.8rem;
+    opacity: 0.8;
+}
+
+.payment-stat-card .stat-chart {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    padding: 8px 12px;
+    background: rgba(76, 175, 80, 0.1);
+    border-radius: var(--radius-sm);
+}
+
+.payment-stat-card .stat-chart i {
+    color: var(--color-success);
+    font-size: 1.2rem;
+}
+
+.payment-stat-card .stat-chart span {
+    color: var(--color-success);
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+/* ============================================
+   2. Quick Pay Section
+   ============================================ */
+.quick-pay-section {
+    margin-bottom: var(--spacing-xl);
+}
+
+.quick-pay-section .section-header {
+    margin-bottom: var(--spacing-lg);
+}
+
+.quick-pay-section .section-header h2 {
+    color: var(--color-cream);
+    font-size: 1.5rem;
+    margin-bottom: 4px;
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+}
+
+.quick-pay-section .section-header p {
+    color: var(--color-soft-rose);
+}
+
+.quick-pay-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: var(--spacing-lg);
+}
+
+.quick-pay-card {
+    background: var(--gradient-card);
+    padding: var(--spacing-lg);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
+    border: 1px solid rgba(223, 182, 178, 0.1);
+    transition: all var(--transition-normal);
+}
+
+.quick-pay-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-lg), var(--shadow-glow);
+}
+
+.quick-pay-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--spacing-md);
+}
+
+.quick-pay-header i {
+    font-size: 2rem;
+    color: var(--color-soft-rose);
+}
+
+.due-badge {
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.due-badge.urgent {
+    background: rgba(244, 67, 54, 0.2);
+    color: var(--color-danger);
+    animation: pulse 2s ease infinite;
+}
+
+.due-badge.warning {
+    background: rgba(255, 152, 0, 0.2);
+    color: var(--color-warning);
+}
+
+.due-badge.normal {
+    background: rgba(33, 150, 243, 0.2);
+    color: var(--color-info);
+}
+
+.quick-pay-card h3 {
+    color: var(--color-cream);
+    font-size: 1.2rem;
+    margin-bottom: var(--spacing-sm);
+}
+
+.quick-amount {
+    color: var(--color-soft-rose);
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin-bottom: 6px;
+}
+
+.quick-due {
+    color: var(--color-soft-rose);
+    font-size: 0.85rem;
+    margin-bottom: var(--spacing-md);
+    opacity: 0.8;
+}
+
+.btn-quick-pay {
+    width: 100%;
+    padding: var(--spacing-sm);
+    background: var(--gradient-success);
+    border: none;
+    border-radius: var(--radius-md);
+    color: white;
+    font-family: 'Cairo', sans-serif;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-xs);
+    transition: all var(--transition-normal);
+}
+
+.btn-quick-pay:hover {
+    transform: scale(1.02);
+    box-shadow: var(--shadow-md);
+}
+
+/* ============================================
+   3. Filters Section
+   ============================================ */
+.filters-section {
+    background: var(--gradient-card);
+    padding: var(--spacing-lg);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
+    margin-bottom: var(--spacing-lg);
+}
+
+.filter-group {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr auto;
+    gap: var(--spacing-md);
+    align-items: center;
+}
+
+.filter-item select {
+    width: 100%;
+    padding: var(--spacing-sm) var(--spacing-md);
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(223, 182, 178, 0.2);
+    border-radius: var(--radius-sm);
+    color: var(--color-cream);
+    font-family: 'Cairo', sans-serif;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.filter-item select:focus {
+    outline: none;
+    border-color: var(--color-soft-rose);
+}
+
+.btn-export {
+    padding: var(--spacing-sm) var(--spacing-lg);
+    background: rgba(76, 175, 80, 0.2);
+    border: 1px solid var(--color-success);
+    border-radius: var(--radius-sm);
+    color: var(--color-success);
+    font-family: 'Cairo', sans-serif;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    transition: all var(--transition-fast);
+}
+
+.btn-export:hover {
+    background: rgba(76, 175, 80, 0.3);
+}
+
+/* ============================================
+   4. Payments History
+   ============================================ */
+.payments-history {
+    background: var(--gradient-card);
+    padding: var(--spacing-lg);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
+    margin-bottom: var(--spacing-xl);
+}
+
+.payments-history .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--spacing-lg);
+    padding-bottom: var(--spacing-md);
+    border-bottom: 1px solid rgba(223, 182, 178, 0.1);
+}
+
+.payments-history .section-header h2 {
+    color: var(--color-cream);
+    font-size: 1.3rem;
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+}
+
+.results-count {
+    color: var(--color-soft-rose);
+    font-size: 0.9rem;
+}
+
+.results-count strong {
+    color: var(--color-cream);
+}
+
+/* ============================================
+   5. Payments Table
+   ============================================ */
+.payments-table-container {
+    overflow-x: auto;
+    margin-bottom: var(--spacing-lg);
+}
+
+.payments-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.payments-table thead {
+    background: rgba(0, 0, 0, 0.3);
+}
+
+.payments-table th {
+    padding: var(--spacing-md);
+    text-align: right;
+    color: var(--color-soft-rose);
+    font-weight: 600;
+    font-size: 0.9rem;
+    border-bottom: 2px solid rgba(223, 182, 178, 0.2);
+}
+
+.payments-table tbody tr {
+    border-bottom: 1px solid rgba(223, 182, 178, 0.1);
+    transition: all var(--transition-fast);
+}
+
+.payments-table tbody tr:hover {
+    background: rgba(0, 0, 0, 0.2);
+}
+
+.payments-table td {
+    padding: var(--spacing-md);
+    color: var(--color-cream);
+}
+
+.date-cell {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    color: var(--color-soft-rose);
+    font-size: 0.9rem;
+}
+
+.date-cell i {
+    color: var(--color-soft-rose);
+    opacity: 0.7;
+}
+
+.debt-cell {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    font-weight: 600;
+}
+
+.debt-cell i {
+    color: var(--color-soft-rose);
+}
+
+.amount-cell {
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: var(--color-success);
+}
+
+.method-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.method-badge.cash {
+    background: rgba(76, 175, 80, 0.2);
+    color: var(--color-success);
+}
+
+.method-badge.card {
+    background: rgba(33, 150, 243, 0.2);
+    color: var(--color-info);
+}
+
+.method-badge.transfer {
+    background: rgba(255, 152, 0, 0.2);
+    color: var(--color-warning);
+}
+
+.method-badge.online {
+    background: rgba(156, 39, 176, 0.2);
+    color: #CE93D8;
+}
+
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.status-badge.success {
+    background: rgba(76, 175, 80, 0.2);
+    color: var(--color-success);
+}
+
+.status-badge.pending {
+    background: rgba(255, 152, 0, 0.2);
+    color: var(--color-warning);
+}
+
+.status-badge.failed {
+    background: rgba(244, 67, 54, 0.2);
+    color: var(--color-danger);
+}
+
+.action-buttons {
+    display: flex;
+    gap: var(--spacing-xs);
+}
+
+.btn-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: rgba(223, 182, 178, 0.1);
+    border: none;
+    color: var(--color-cream);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all var(--transition-fast);
+}
+
+.btn-icon:hover {
+    background: rgba(223, 182, 178, 0.2);
+    transform: scale(1.1);
+}
+
+.btn-icon.danger {
+    color: var(--color-danger);
+}
+
+.btn-icon.danger:hover {
+    background: rgba(244, 67, 54, 0.2);
+}
+
+/* ============================================
+   6. Pagination
+   ============================================ */
+.pagination {
+    display: flex;
+    justify-content: center;
+    gap: var(--spacing-xs);
+}
+
+.page-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: var(--radius-sm);
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(223, 182, 178, 0.2);
+    color: var(--color-cream);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    font-family: 'Cairo', sans-serif;
+    font-weight: 600;
+}
+
+.page-btn:hover:not(:disabled) {
+    background: rgba(223, 182, 178, 0.2);
+}
+
+.page-btn.active {
+    background: var(--color-medium-purple);
+    border-color: var(--color-medium-purple);
+}
+
+.page-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+/* ============================================
+   7. Modal Specific Styles
+   ============================================ */
+.payment-methods {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--spacing-md);
+}
+
+.method-option {
+    cursor: pointer;
+}
+
+.method-option input[type="radio"] {
+    display: none;
+}
+
+.method-card {
+    padding: var(--spacing-md);
+    background: rgba(0, 0, 0, 0.3);
+    border: 2px solid rgba(223, 182, 178, 0.2);
+    border-radius: var(--radius-md);
+    text-align: center;
+    transition: all var(--transition-fast);
+}
+
+.method-card i {
+    font-size: 2rem;
+    color: var(--color-soft-rose);
+    margin-bottom: var(--spacing-xs);
+    display: block;
+}
+
+.method-card span {
+    color: var(--color-cream);
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.method-option input[type="radio"]:checked + .method-card {
+    background: var(--color-medium-purple);
+    border-color: var(--color-soft-rose);
+}
+
+.payment-summary {
+    background: rgba(0, 0, 0, 0.3);
+    padding: var(--spacing-md);
+    border-radius: var(--radius-md);
+    margin-top: var(--spacing-md);
+}
+
+.summary-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--spacing-xs) 0;
+    color: var(--color-soft-rose);
+}
+
+.summary-item strong {
+    color: var(--color-cream);
+    font-size: 1.1rem;
+}
+
+/* ============================================
+   8. Responsive Design
+   ============================================ */
+@media (max-width: 1200px) {
+    .payment-methods {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .payment-stats {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .quick-pay-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .filter-group {
+        grid-template-columns: 1fr;
+    }
+    
+    .payments-table {
+        font-size: 0.85rem;
+    }
+    
+    .payments-table th,
+    .payments-table td {
+        padding: var(--spacing-sm);
+    }
+    
+    .method-badge,
+    .status-badge {
+        font-size: 0.75rem;
+        padding: 4px 8px;
+    }
+}
+
+@media (max-width: 576px) {
+    .payment-stats {
+        grid-template-columns: 1fr;
+    }
+    
+    .payment-methods {
+        grid-template-columns: 1fr;
+    }
+    
+    .action-buttons {
+        flex-direction: column;
+    }
+    
+    /* تبسيط الجدول للموبايل */
+    .payments-table thead {
+        display: none;
+    }
+    
+    .payments-table tbody tr {
+        display: block;
+        margin-bottom: var(--spacing-md);
+        background: rgba(0, 0, 0, 0.2);
+        border-radius: var(--radius-md);
+        padding: var(--spacing-md);
+    }
+    
+    .payments-table td {
+        display: block;
+        text-align: right;
+        padding: var(--spacing-xs) 0;
+    }
+    
+    .payments-table td::before {
+        content: attr(data-label);
+        float: left;
+        font-weight: 600;
+        color: var(--color-soft-rose);
+    }
+}
+
+/* ============================================
+   9. Success Animation
+   ============================================ */
+@keyframes paymentSuccess {
+    0% {
+        transform: scale(0);
+        opacity: 0;
+    }
+    50% {
+        transform: scale(1.2);
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.payment-success-icon {
+    animation: paymentSuccess 0.5s ease;
+}
+
+/* ============================================
+   10. Loading State
+   ============================================ */
+.loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(25, 0, 25, 0.9);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10002;
+}
+
+.loading-spinner {
+    width: 60px;
+    height: 60px;
+    border: 4px solid rgba(223, 182, 178, 0.2);
+    border-top-color: var(--color-soft-rose);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}

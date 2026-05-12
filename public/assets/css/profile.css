@@ -1,0 +1,699 @@
+/* ============================================
+   Profile Page - CSS
+   تصميم صفحة الملف الشخصي
+   ============================================ */
+
+/* ============================================
+   1. Page Header
+   ============================================ */
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--spacing-xl);
+    padding: var(--spacing-lg);
+    background: var(--gradient-card);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
+}
+
+.header-content h1 {
+    font-size: 1.8rem;
+    color: var(--color-cream);
+    margin-bottom: var(--spacing-xs);
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+}
+
+.header-content p {
+    color: var(--color-soft-rose);
+    opacity: 0.9;
+}
+
+/* ============================================
+   2. Profile Cover - غلاف البروفايل
+   ============================================ */
+.profile-cover {
+    background: var(--gradient-card);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    margin-bottom: var(--spacing-xl);
+    box-shadow: var(--shadow-md);
+}
+
+.cover-image {
+    height: 200px;
+    background: linear-gradient(135deg, #2B124C 0%, #522B5B 50%, #854F6C 100%);
+    position: relative;
+}
+
+.cover-image::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: 
+        radial-gradient(circle at 20% 50%, rgba(223, 182, 178, 0.2) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(133, 79, 108, 0.2) 0%, transparent 50%);
+}
+
+.profile-header-content {
+    padding: var(--spacing-xl);
+    display: flex;
+    align-items: flex-end;
+    gap: var(--spacing-xl);
+    margin-top: -80px;
+    position: relative;
+}
+
+/* Avatar */
+.profile-avatar-wrapper {
+    position: relative;
+    flex-shrink: 0;
+}
+
+.profile-avatar {
+    width: 160px;
+    height: 160px;
+    border-radius: 50%;
+    border: 5px solid var(--color-dark-purple);
+    overflow: hidden;
+    box-shadow: var(--shadow-lg);
+    position: relative;
+}
+
+.profile-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.change-avatar-btn {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--color-medium-purple);
+    border: 3px solid var(--color-dark-purple);
+    color: var(--color-cream);
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all var(--transition-normal);
+}
+
+.change-avatar-btn:hover {
+    background: var(--color-light-purple);
+    transform: scale(1.1);
+}
+
+.profile-badge {
+    position: absolute;
+    bottom: 5px;
+    left: 5px;
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    background: var(--color-success);
+    border: 3px solid var(--color-dark-purple);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1rem;
+}
+
+/* Profile Info */
+.profile-info {
+    flex: 1;
+    color: var(--color-cream);
+}
+
+.profile-info h2 {
+    font-size: 2rem;
+    margin-bottom: var(--spacing-xs);
+    color: var(--color-cream);
+}
+
+.profile-info p {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    color: var(--color-soft-rose);
+    margin-bottom: 6px;
+    font-size: 0.95rem;
+}
+
+.profile-info i {
+    width: 20px;
+    opacity: 0.8;
+}
+
+/* Profile Actions */
+.profile-actions {
+    display: flex;
+    gap: var(--spacing-sm);
+}
+
+.btn-secondary {
+    padding: var(--spacing-sm) var(--spacing-lg);
+    background: rgba(223, 182, 178, 0.1);
+    color: var(--color-cream);
+    border: 1px solid rgba(223, 182, 178, 0.2);
+    border-radius: var(--radius-md);
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    transition: all var(--transition-normal);
+    font-family: 'Cairo', sans-serif;
+}
+
+.btn-secondary:hover {
+    background: rgba(223, 182, 178, 0.2);
+    transform: translateY(-2px);
+}
+
+/* ============================================
+   3. Profile Stats - إحصائيات البروفايل
+   ============================================ */
+.profile-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: var(--spacing-lg);
+    margin-bottom: var(--spacing-xl);
+}
+
+.stat-box {
+    background: var(--gradient-card);
+    padding: var(--spacing-lg);
+    border-radius: var(--radius-lg);
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    box-shadow: var(--shadow-md);
+    transition: all var(--transition-normal);
+    border: 1px solid rgba(223, 182, 178, 0.1);
+}
+
+.stat-box:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-lg);
+}
+
+.stat-box .stat-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: var(--radius-md);
+    background: rgba(223, 182, 178, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    color: var(--color-soft-rose);
+}
+
+.stat-box .stat-details h3 {
+    font-size: 2rem;
+    color: var(--color-cream);
+    margin-bottom: 4px;
+}
+
+.stat-box .stat-details p {
+    color: var(--color-soft-rose);
+    font-size: 0.9rem;
+}
+
+/* ============================================
+   4. Profile Content Grid
+   ============================================ */
+.profile-content-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--spacing-xl);
+}
+
+/* ============================================
+   5. Info Cards - البطاقات
+   ============================================ */
+.info-card {
+    background: var(--gradient-card);
+    padding: var(--spacing-lg);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
+    margin-bottom: var(--spacing-lg);
+    border: 1px solid rgba(223, 182, 178, 0.1);
+}
+
+.info-card .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--spacing-md);
+    padding-bottom: var(--spacing-md);
+    border-bottom: 1px solid rgba(223, 182, 178, 0.1);
+}
+
+.info-card .card-header h3 {
+    color: var(--color-cream);
+    font-size: 1.2rem;
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+}
+
+.btn-edit {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: rgba(223, 182, 178, 0.1);
+    border: none;
+    color: var(--color-soft-rose);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.btn-edit:hover {
+    background: rgba(223, 182, 178, 0.2);
+    transform: rotate(90deg);
+}
+
+/* ============================================
+   6. Personal Information List
+   ============================================ */
+.info-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+}
+
+.info-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--spacing-sm);
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: var(--radius-sm);
+    transition: all var(--transition-fast);
+}
+
+.info-item:hover {
+    background: rgba(0, 0, 0, 0.3);
+}
+
+.info-label {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    color: var(--color-soft-rose);
+    font-size: 0.9rem;
+}
+
+.info-label i {
+    width: 20px;
+}
+
+.info-value {
+    color: var(--color-cream);
+    font-weight: 600;
+}
+
+/* ============================================
+   7. Security List
+   ============================================ */
+.security-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+}
+
+.security-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--spacing-md);
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: var(--radius-md);
+}
+
+.security-info {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+}
+
+.security-info i {
+    font-size: 1.5rem;
+    color: var(--color-soft-rose);
+    width: 30px;
+}
+
+.security-info h4 {
+    color: var(--color-cream);
+    margin-bottom: 4px;
+    font-size: 1rem;
+}
+
+.security-info p {
+    color: var(--color-soft-rose);
+    font-size: 0.85rem;
+}
+
+.status-enabled {
+    color: var(--color-success) !important;
+    font-weight: 600;
+}
+
+.btn-change {
+    padding: 6px 16px;
+    background: rgba(223, 182, 178, 0.1);
+    border: 1px solid rgba(223, 182, 178, 0.2);
+    border-radius: var(--radius-sm);
+    color: var(--color-cream);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    font-family: 'Cairo', sans-serif;
+    font-size: 0.85rem;
+}
+
+.btn-change:hover {
+    background: rgba(223, 182, 178, 0.2);
+}
+
+/* ============================================
+   8. Connected Accounts
+   ============================================ */
+.connected-accounts {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+}
+
+.account-item {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    padding: var(--spacing-md);
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: var(--radius-md);
+}
+
+.account-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    color: white;
+}
+
+.account-icon.google {
+    background: linear-gradient(135deg, #EA4335 0%, #FBBC05 100%);
+}
+
+.account-icon.facebook {
+    background: #1877F2;
+}
+
+.account-icon.twitter {
+    background: #1DA1F2;
+}
+
+.account-info {
+    flex: 1;
+}
+
+.account-info h4 {
+    color: var(--color-cream);
+    margin-bottom: 4px;
+}
+
+.account-info p {
+    color: var(--color-soft-rose);
+    font-size: 0.85rem;
+}
+
+.account-item.connected .account-info p {
+    color: var(--color-success);
+}
+
+.btn-connect,
+.btn-disconnect {
+    padding: 6px 16px;
+    border-radius: var(--radius-sm);
+    border: none;
+    cursor: pointer;
+    font-family: 'Cairo', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 600;
+    transition: all var(--transition-fast);
+}
+
+.btn-connect {
+    background: var(--gradient-success);
+    color: white;
+}
+
+.btn-connect:hover {
+    transform: scale(1.05);
+}
+
+.btn-disconnect {
+    background: rgba(244, 67, 54, 0.2);
+    color: var(--color-danger);
+}
+
+.btn-disconnect:hover {
+    background: rgba(244, 67, 54, 0.3);
+}
+
+/* ============================================
+   9. Activity Timeline
+   ============================================ */
+.activity-timeline {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+    max-height: 400px;
+    overflow-y: auto;
+    padding-left: var(--spacing-xs);
+}
+
+.timeline-item {
+    display: flex;
+    gap: var(--spacing-md);
+    position: relative;
+    padding: var(--spacing-md);
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: var(--radius-md);
+    transition: all var(--transition-fast);
+}
+
+.timeline-item:hover {
+    background: rgba(0, 0, 0, 0.3);
+    transform: translateX(-5px);
+}
+
+.timeline-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    margin-top: 6px;
+}
+
+.timeline-dot.payment {
+    background: var(--color-success);
+    box-shadow: 0 0 10px var(--color-success);
+}
+
+.timeline-dot.new {
+    background: var(--color-warning);
+    box-shadow: 0 0 10px var(--color-warning);
+}
+
+.timeline-dot.update {
+    background: var(--color-info);
+    box-shadow: 0 0 10px var(--color-info);
+}
+
+.timeline-content h4 {
+    color: var(--color-cream);
+    margin-bottom: 4px;
+    font-size: 1rem;
+}
+
+.timeline-content p {
+    color: var(--color-soft-rose);
+    font-size: 0.85rem;
+    margin-bottom: 6px;
+}
+
+.timeline-time {
+    color: var(--color-soft-rose);
+    font-size: 0.75rem;
+    opacity: 0.7;
+}
+
+/* ============================================
+   10. Achievements
+   ============================================ */
+.achievements-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--spacing-md);
+}
+
+.achievement-badge {
+    padding: var(--spacing-md);
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: var(--radius-md);
+    text-align: center;
+    transition: all var(--transition-normal);
+    border: 2px solid transparent;
+}
+
+.achievement-badge.unlocked {
+    border-color: var(--color-success);
+}
+
+.achievement-badge.unlocked:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 20px rgba(76, 175, 80, 0.3);
+}
+
+.achievement-badge.locked {
+    opacity: 0.4;
+}
+
+.badge-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: rgba(223, 182, 178, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto var(--spacing-sm);
+    font-size: 1.8rem;
+}
+
+.achievement-badge.unlocked .badge-icon {
+    background: rgba(76, 175, 80, 0.2);
+    color: var(--color-success);
+}
+
+.achievement-badge h4 {
+    color: var(--color-cream);
+    margin-bottom: 4px;
+    font-size: 0.95rem;
+}
+
+.achievement-badge p {
+    color: var(--color-soft-rose);
+    font-size: 0.8rem;
+}
+
+/* ============================================
+   11. Financial Summary
+   ============================================ */
+.financial-summary {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+}
+
+.summary-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--spacing-sm) 0;
+}
+
+.summary-label {
+    color: var(--color-soft-rose);
+    font-size: 0.9rem;
+}
+
+.summary-value {
+    color: var(--color-cream);
+    font-weight: 700;
+    font-size: 1.1rem;
+}
+
+.summary-value.positive {
+    color: var(--color-success);
+}
+
+.summary-value.success {
+    color: var(--color-success);
+}
+
+.summary-divider {
+    height: 1px;
+    background: rgba(223, 182, 178, 0.2);
+    margin: var(--spacing-sm) 0;
+}
+
+/* ============================================
+   12. Responsive Design
+   ============================================ */
+@media (max-width: 1200px) {
+    .profile-content-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 768px) {
+    .profile-header-content {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        margin-top: -60px;
+    }
+    
+    .profile-avatar {
+        width: 120px;
+        height: 120px;
+    }
+    
+    .profile-actions {
+        flex-direction: column;
+        width: 100%;
+    }
+    
+    .btn-secondary {
+        justify-content: center;
+    }
+    
+    .profile-stats {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .achievements-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 576px) {
+    .profile-stats {
+        grid-template-columns: 1fr;
+    }
+    
+    .page-header {
+        flex-direction: column;
+        gap: var(--spacing-md);
+    }
+    
+    .btn-primary {
+        width: 100%;
+        justify-content: center;
+    }
+}

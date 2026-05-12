@@ -1,0 +1,715 @@
+/* ============================================
+   Reports Page - CSS
+   تصميم صفحة التقارير المالية
+   ============================================ */
+
+/* ============================================
+   1. Header Actions
+   ============================================ */
+.header-actions {
+    display: flex;
+    gap: var(--spacing-sm);
+}
+
+/* ============================================
+   2. Period Filter
+   ============================================ */
+.period-filter {
+    background: var(--gradient-card);
+    padding: var(--spacing-lg);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
+    margin-bottom: var(--spacing-xl);
+}
+
+.period-buttons {
+    display: flex;
+    gap: var(--spacing-xs);
+    flex-wrap: wrap;
+}
+
+.period-btn {
+    padding: var(--spacing-sm) var(--spacing-lg);
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(223, 182, 178, 0.2);
+    border-radius: var(--radius-md);
+    color: var(--color-cream);
+    font-family: 'Cairo', sans-serif;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.period-btn:hover {
+    background: rgba(223, 182, 178, 0.2);
+}
+
+.period-btn.active {
+    background: var(--color-medium-purple);
+    border-color: var(--color-soft-rose);
+}
+
+.custom-date-range {
+    display: flex;
+    gap: var(--spacing-md);
+    align-items: center;
+    margin-top: var(--spacing-md);
+}
+
+.custom-date-range input[type="date"] {
+    padding: var(--spacing-sm) var(--spacing-md);
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(223, 182, 178, 0.2);
+    border-radius: var(--radius-sm);
+    color: var(--color-cream);
+    font-family: 'Cairo', sans-serif;
+}
+
+.custom-date-range span {
+    color: var(--color-soft-rose);
+}
+
+.btn-apply {
+    padding: var(--spacing-sm) var(--spacing-lg);
+    background: var(--gradient-success);
+    border: none;
+    border-radius: var(--radius-sm);
+    color: white;
+    font-family: 'Cairo', sans-serif;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.btn-apply:hover {
+    transform: scale(1.05);
+}
+
+/* ============================================
+   3. Summary Cards
+   ============================================ */
+.summary-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: var(--spacing-lg);
+    margin-bottom: var(--spacing-xl);
+}
+
+.summary-card {
+    background: var(--gradient-card);
+    padding: var(--spacing-lg);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
+    display: flex;
+    gap: var(--spacing-md);
+    transition: all var(--transition-normal);
+    border: 1px solid rgba(223, 182, 178, 0.1);
+    position: relative;
+    overflow: hidden;
+}
+
+.summary-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 100%;
+    height: 4px;
+}
+
+.summary-card.income::before {
+    background: linear-gradient(135deg, #F44336 0%, #E91E63 100%);
+}
+
+.summary-card.expense::before {
+    background: var(--gradient-success);
+}
+
+.summary-card.balance::before {
+    background: linear-gradient(135deg, #FF9800 0%, #FFB74D 100%);
+}
+
+.summary-card.rate::before {
+    background: linear-gradient(135deg, #2196F3 0%, #64B5F6 100%);
+}
+
+.summary-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-lg);
+}
+
+.summary-card .card-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.8rem;
+    flex-shrink: 0;
+}
+
+.summary-card.income .card-icon {
+    background: rgba(244, 67, 54, 0.2);
+    color: var(--color-danger);
+}
+
+.summary-card.expense .card-icon {
+    background: rgba(76, 175, 80, 0.2);
+    color: var(--color-success);
+}
+
+.summary-card.balance .card-icon {
+    background: rgba(255, 152, 0, 0.2);
+    color: var(--color-warning);
+}
+
+.summary-card.rate .card-icon {
+    background: rgba(33, 150, 243, 0.2);
+    color: var(--color-info);
+}
+
+.card-content {
+    flex: 1;
+}
+
+.card-content h3 {
+    color: var(--color-soft-rose);
+    font-size: 0.9rem;
+    margin-bottom: var(--spacing-xs);
+}
+
+.card-value {
+    color: var(--color-cream);
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: var(--spacing-xs);
+}
+
+.card-change {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.card-change.positive {
+    color: var(--color-success);
+}
+
+.card-change.negative {
+    color: var(--color-danger);
+}
+
+.card-change.warning {
+    color: var(--color-warning);
+}
+
+/* ============================================
+   4. Charts Grid
+   ============================================ */
+.charts-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--spacing-lg);
+    margin-bottom: var(--spacing-xl);
+}
+
+.chart-card {
+    background: var(--gradient-card);
+    padding: var(--spacing-lg);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
+    border: 1px solid rgba(223, 182, 178, 0.1);
+}
+
+.chart-card.large {
+    grid-column: 1 / -1;
+}
+
+.chart-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--spacing-lg);
+    padding-bottom: var(--spacing-md);
+    border-bottom: 1px solid rgba(223, 182, 178, 0.1);
+}
+
+.chart-header h3 {
+    color: var(--color-cream);
+    font-size: 1.2rem;
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+}
+
+.chart-controls {
+    display: flex;
+    gap: var(--spacing-xs);
+    background: rgba(0, 0, 0, 0.3);
+    padding: 4px;
+    border-radius: var(--radius-sm);
+}
+
+.chart-btn {
+    padding: 6px 16px;
+    background: transparent;
+    border: none;
+    color: var(--color-soft-rose);
+    font-family: 'Cairo', sans-serif;
+    font-size: 0.85rem;
+    cursor: pointer;
+    border-radius: var(--radius-sm);
+    transition: all var(--transition-fast);
+}
+
+.chart-btn:hover {
+    background: rgba(223, 182, 178, 0.1);
+}
+
+.chart-btn.active {
+    background: var(--color-medium-purple);
+    color: var(--color-cream);
+}
+
+.chart-container {
+    position: relative;
+    height: 300px;
+}
+
+.chart-card.large .chart-container {
+    height: 400px;
+}
+
+/* Custom Legend */
+.chart-legend-custom {
+    margin-top: var(--spacing-md);
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-xs);
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: var(--radius-sm);
+}
+
+.legend-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.legend-item span {
+    color: var(--color-soft-rose);
+    font-size: 0.9rem;
+    flex: 1;
+}
+
+.legend-item strong {
+    color: var(--color-cream);
+    font-size: 0.95rem;
+}
+
+/* ============================================
+   5. Detailed Section
+   ============================================ */
+.detailed-section {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--spacing-lg);
+    margin-bottom: var(--spacing-xl);
+}
+
+.detail-card {
+    background: var(--gradient-card);
+    padding: var(--spacing-lg);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
+    border: 1px solid rgba(223, 182, 178, 0.1);
+}
+
+.detail-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--spacing-md);
+    padding-bottom: var(--spacing-md);
+    border-bottom: 1px solid rgba(223, 182, 178, 0.1);
+}
+
+.detail-header h3 {
+    color: var(--color-cream);
+    font-size: 1.1rem;
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+}
+
+.detail-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+}
+
+.detail-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--spacing-md);
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: var(--radius-md);
+    transition: all var(--transition-fast);
+}
+
+.detail-item:hover {
+    background: rgba(0, 0, 0, 0.3);
+    transform: translateX(-5px);
+}
+
+.item-info {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    flex: 1;
+}
+
+.item-info > i {
+    font-size: 1.5rem;
+    color: var(--color-soft-rose);
+    width: 30px;
+}
+
+.item-info h4 {
+    color: var(--color-cream);
+    margin-bottom: 4px;
+    font-size: 1rem;
+}
+
+.item-info p {
+    color: var(--color-soft-rose);
+    font-size: 0.85rem;
+}
+
+.item-progress {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+}
+
+.progress-bar-small {
+    width: 100px;
+    height: 6px;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.progress-bar-small .progress-fill {
+    height: 100%;
+    background: var(--gradient-primary);
+    border-radius: 10px;
+}
+
+.progress-bar-small .progress-fill.success {
+    background: var(--gradient-success);
+}
+
+.item-progress span {
+    color: var(--color-soft-rose);
+    font-size: 0.85rem;
+    font-weight: 600;
+    min-width: 40px;
+}
+
+/* Payment Date */
+.payment-date {
+    width: 50px;
+    height: 50px;
+    background: rgba(223, 182, 178, 0.1);
+    border-radius: var(--radius-sm);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.payment-date .day {
+    color: var(--color-cream);
+    font-size: 1.3rem;
+    font-weight: 700;
+}
+
+.payment-date .month {
+    color: var(--color-soft-rose);
+    font-size: 0.75rem;
+}
+
+.item-amount {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 1.1rem;
+    font-weight: 700;
+}
+
+.item-amount.success {
+    color: var(--color-success);
+}
+
+/* ============================================
+   6. Insights Section
+   ============================================ */
+.insights-section {
+    margin-bottom: var(--spacing-xl);
+}
+
+.insights-section h2 {
+    color: var(--color-cream);
+    font-size: 1.5rem;
+    margin-bottom: var(--spacing-lg);
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+}
+
+.insights-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: var(--spacing-lg);
+}
+
+.insight-card {
+    background: var(--gradient-card);
+    padding: var(--spacing-lg);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
+    display: flex;
+    gap: var(--spacing-md);
+    border: 1px solid rgba(223, 182, 178, 0.1);
+    border-right: 4px solid;
+    transition: all var(--transition-normal);
+}
+
+.insight-card:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-lg);
+}
+
+.insight-card.positive {
+    border-right-color: var(--color-success);
+}
+
+.insight-card.warning {
+    border-right-color: var(--color-warning);
+}
+
+.insight-card.info {
+    border-right-color: var(--color-info);
+}
+
+.insight-card.suggestion {
+    border-right-color: var(--color-soft-rose);
+}
+
+.insight-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    flex-shrink: 0;
+}
+
+.insight-card.positive .insight-icon {
+    background: rgba(76, 175, 80, 0.2);
+    color: var(--color-success);
+}
+
+.insight-card.warning .insight-icon {
+    background: rgba(255, 152, 0, 0.2);
+    color: var(--color-warning);
+}
+
+.insight-card.info .insight-icon {
+    background: rgba(33, 150, 243, 0.2);
+    color: var(--color-info);
+}
+
+.insight-card.suggestion .insight-icon {
+    background: rgba(133, 79, 108, 0.2);
+    color: var(--color-soft-rose);
+}
+
+.insight-content h4 {
+    color: var(--color-cream);
+    margin-bottom: 6px;
+    font-size: 1.1rem;
+}
+
+.insight-content p {
+    color: var(--color-soft-rose);
+    font-size: 0.9rem;
+    line-height: 1.6;
+}
+
+/* ============================================
+   7. Print Styles
+   ============================================ */
+@media print {
+    .sidebar,
+    .page-header,
+    .period-filter,
+    .header-actions {
+        display: none;
+    }
+    
+    .main-content {
+        margin-right: 0;
+    }
+    
+    .chart-card,
+    .summary-card,
+    .detail-card,
+    .insight-card {
+        break-inside: avoid;
+        page-break-inside: avoid;
+    }
+}
+
+/* ============================================
+   8. Responsive Design
+   ============================================ */
+@media (max-width: 1200px) {
+    .charts-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .chart-card.large {
+        grid-column: auto;
+    }
+}
+
+@media (max-width: 768px) {
+    .summary-cards {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .detailed-section {
+        grid-template-columns: 1fr;
+    }
+    
+    .insights-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .period-buttons {
+        justify-content: space-between;
+    }
+    
+    .period-btn {
+        flex: 1;
+        padding: var(--spacing-sm);
+        font-size: 0.85rem;
+    }
+    
+    .header-actions {
+        flex-direction: column;
+        width: 100%;
+    }
+    
+    .header-actions button {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+@media (max-width: 576px) {
+    .summary-cards {
+        grid-template-columns: 1fr;
+    }
+    
+    .chart-controls {
+        flex-direction: column;
+        width: 100%;
+    }
+    
+    .chart-btn {
+        width: 100%;
+        text-align: center;
+    }
+    
+    .custom-date-range {
+        flex-direction: column;
+    }
+    
+    .custom-date-range input,
+    .btn-apply {
+        width: 100%;
+    }
+}
+
+/* ============================================
+   9. Loading Animation for Charts
+   ============================================ */
+.chart-loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 300px;
+    color: var(--color-soft-rose);
+}
+
+.chart-loading i {
+    font-size: 3rem;
+    animation: spin 2s linear infinite;
+}
+
+/* ============================================
+   10. Export Progress
+   ============================================ */
+.export-progress {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--gradient-card);
+    padding: var(--spacing-lg);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg);
+    z-index: 10001;
+    min-width: 300px;
+}
+
+.export-progress h4 {
+    color: var(--color-cream);
+    margin-bottom: var(--spacing-sm);
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+}
+
+.export-progress-bar {
+    width: 100%;
+    height: 8px;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.export-progress-fill {
+    height: 100%;
+    background: var(--gradient-success);
+    border-radius: 10px;
+    transition: width 0.3s ease;
+}
