@@ -2,8 +2,6 @@
 
 namespace App\Models;
 
-use App\Models\Debt;
-use App\Models\PaymentLog;
 use Illuminate\Database\Eloquent\Model;
 
 class Installment extends Model

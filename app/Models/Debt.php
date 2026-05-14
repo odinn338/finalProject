@@ -2,9 +2,6 @@
 
 namespace App\Models;
 
-use App\Models\Installment;
-use App\Models\PaymentLog;
-use App\Models\ReschedulingRequest;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 

@@ -58,6 +58,7 @@
                 تقرير إداري شامل عن المحفظة الكاملة وأكبر المديونين بصيغة PDF.
             </p>
             <a href="{{ route('admin.reports.admin.pdf') }}" class="btn-primary" style="width:100%;justify-content:center;">
+                {{-- route name: admin.reports.admin.pdf → web.php line 80 --}}
                 <i class="fas fa-download"></i> تصدير PDF
             </a>
         </div>

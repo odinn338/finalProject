@@ -749,8 +749,34 @@
         <i class="fas fa-coins"></i>
         <h2>Debt Mate</h2>
     </div>
-
+    @if(!auth()->user()->isAdmin())
+    @php
+        $walletBalance = auth()->user()->wallet->available_balance ?? 0;
+        $walletReserved = auth()->user()->wallet->reserved_balance ?? 0;
+    @endphp
+    <div class="wallet-card" style="margin: 14px 12px; background: linear-gradient(135deg, rgba(108,99,255,0.2), rgba(108,99,255,0.08)); border: 1px solid rgba(108,99,255,0.25); border-radius: 8px; padding: 14px 16px;">
+        <div class="wallet-card-label" style="font-size: .72rem; color: #9ca3af; margin-bottom: 4px; display: flex; align-items: center; gap: 6px;">
+            <i class="fas fa-wallet"></i> رصيد محفظتي
+        </div>
+        <div class="wallet-balance" style="font-size: 1.3rem; font-weight: 900; color: #ffffff; line-height: 1.1;">
+            {{ number_format($walletBalance, 2) }} <small style="font-size: .55em; color: #9ca3af;">ج.م</small>
+        </div>
+        @if($walletReserved > 0)
+            <div class="wallet-reserved" style="font-size: .74rem; color: #f39c12; margin-top: 4px; display: flex; align-items: center; gap: 4px;">
+                <i class="fas fa-lock" style="font-size:.65rem;"></i> محجوز: {{ number_format($walletReserved, 2) }} ج.م
+            </div>
+        @endif
+        <div class="wallet-actions" style="display: flex; gap: 6px; margin-top: 10px;">
+            <a href="{{ route('wallet.index') }}" class="wallet-btn" style="flex: 1; background: rgba(108,99,255,0.15); border: 1px solid rgba(108,99,255,0.3); color: #8b85ff; font-size: .75rem; font-weight: 700; padding: 6px 8px; border-radius: 6px; text-align: center;">التفاصيل</a>
+            @if(auth()->user()->isDebtor())
+                <a href="{{ route('wallet.topup') }}" class="wallet-btn" style="flex: 1; background: rgba(108,99,255,0.15); border: 1px solid rgba(108,99,255,0.3); color: #8b85ff; font-size: .75rem; font-weight: 700; padding: 6px 8px; border-radius: 6px; text-align: center;">شحن</a>
+            @endif
+        </div>
+    </div>
+@endif
     <nav class="nav-menu">
+
+        {{-- route: dashboard ──────────────────────────────────── --}}
         <a href="{{ route('dashboard') }}"
            class="nav-item {{ request()->routeIs('dashboard') ? 'active' : '' }}">
             <i class="fas fa-home"></i>
@@ -758,42 +784,61 @@
         </a>
 
         @if(auth()->user()->isAdmin())
+
+            {{-- route: admin.requests.index ─────────────────────── --}}
             <a href="{{ route('admin.requests.index') }}"
                class="nav-item {{ request()->routeIs('admin.requests.*') ? 'active' : '' }}">
                 <i class="fas fa-file-invoice-dollar"></i>
                 <span>طلبات الديون</span>
-                @php $pending = \App\Models\DebtRequest::where('status','pending')->count() @endphp
-                @if($pending > 0)
-                    <span class="nav-badge">{{ $pending }}</span>
+                @php $navPendingReq = \App\Models\DebtRequest::where('status','pending')->count() @endphp
+                @if($navPendingReq > 0)
+                    <span class="nav-badge">{{ $navPendingReq }}</span>
                 @endif
             </a>
+
+            {{-- route: admin.rescheduling.index ─────────────────── --}}
             <a href="{{ route('admin.rescheduling.index') }}"
                class="nav-item {{ request()->routeIs('admin.rescheduling.*') ? 'active' : '' }}">
                 <i class="fas fa-sync-alt"></i>
                 <span>إعادة الجدولة</span>
-                @php $pendingR = \App\Models\ReschedulingRequest::where('status','pending')->count() @endphp
-                @if($pendingR > 0)
-                    <span class="nav-badge">{{ $pendingR }}</span>
+                @php $navPendingRs = \App\Models\ReschedulingRequest::where('status','pending')->count() @endphp
+                @if($navPendingRs > 0)
+                    <span class="nav-badge">{{ $navPendingRs }}</span>
                 @endif
             </a>
+
+            {{-- route: reports.index ─────────────────────────────── --}}
+            <a href="{{ route('reports.index') }}"
+               class="nav-item {{ request()->routeIs('reports.*') ? 'active' : '' }}">
+                <i class="fas fa-chart-line"></i>
+                <span>التقارير والتصدير</span>
+            </a>
+
         @else
+
+            {{-- route: debts.index ───────────────────────────────── --}}
             <a href="{{ route('debts.index') }}"
-               class="nav-item {{ request()->routeIs('debts.*') ? 'active' : '' }}">
+               class="nav-item {{ request()->routeIs('debts.index') || request()->routeIs('debts.show') ? 'active' : '' }}">
                 <i class="fas fa-file-invoice-dollar"></i>
                 <span>ديوني</span>
             </a>
+
+            {{-- route: debt-requests.index ──────────────────────── --}}
             <a href="{{ route('debt-requests.index') }}"
                class="nav-item {{ request()->routeIs('debt-requests.*') ? 'active' : '' }}">
                 <i class="fas fa-plus-circle"></i>
                 <span>طلباتي</span>
             </a>
+
+            {{-- route: reports.index ─────────────────────────────── --}}
+            <a href="{{ route('reports.index') }}"
+               class="nav-item {{ request()->routeIs('reports.*') ? 'active' : '' }}">
+                <i class="fas fa-chart-line"></i>
+                <span>التقارير</span>
+            </a>
+
         @endif
 
-        <a href="{{ route('reports.index') }}"
-           class="nav-item {{ request()->routeIs('reports.*') ? 'active' : '' }}">
-            <i class="fas fa-chart-line"></i>
-            <span>التقارير</span>
-        </a>
     </nav>
 
     <a href="#" class="user-profile">

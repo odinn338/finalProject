@@ -97,7 +97,7 @@ class AuthController extends Controller
             'phone'       => $request->phone,
             'address'     => $request->address,
             'password'    => Hash::make($request->password),
-            'role'        => 'user',
+            'role' => $request->role,
             'status'      => 'active',
             'credit_score' => 100.00,
         ]);

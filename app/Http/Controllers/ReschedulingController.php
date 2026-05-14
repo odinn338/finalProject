@@ -58,13 +58,18 @@ class ReschedulingController extends Controller
             ->with('success', 'تم إرسال طلب إعادة الجدولة بنجاح. سيتم مراجعته من قبل الإدارة.');
     }
 
-    /** قائمة طلبات إعادة الجدولة للمدير */
-    public function adminIndex()
+    /** قائمة طلبات إعادة الجدولة للمدير - تدعم فلترة الحالة */
+    public function adminIndex(Request $request)
     {
-        $requests = ReschedulingRequest::with('user', 'debt')
-            ->where('status', 'pending')
-            ->latest()
-            ->paginate(15);
+        $query = ReschedulingRequest::with('user', 'debt')->latest();
+
+        // فلترة اختيارية بالحالة (pending / approved / rejected)
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+
+        // $requests (plural) → يُستخدم في @foreach($requests as $reschedule)
+        $requests = $query->paginate(15)->withQueryString();
 
         return view('admin.rescheduling.index', compact('requests'));
     }

@@ -205,7 +205,13 @@
                     </div>
                 </div>
             </div>
-
+            <div class="form-group mb-3">
+    <label class="form-label">نوع الحساب</label>
+    <select name="role" class="form-control" required>
+        <option value="debtor">مدين (أرغب في الاقتراض)</option>
+        <option value="creditor">دائن (أرغب في الإقراض)</option>
+    </select>
+</div>
             <button type="submit" class="btn-submit">
                 <i class="fas fa-user-plus"></i>
                 إنشاء الحساب
