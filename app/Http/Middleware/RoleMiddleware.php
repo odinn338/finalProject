@@ -21,7 +21,7 @@ class RoleMiddleware
     public function handle(Request $request, Closure $next, string ...$roles): Response
     {
         // التحقق من تسجيل الدخول أولاً
-        if (!Auth::check()) {
+        if (! Auth::check()) {
             return redirect()->route('login')
                 ->with('error', 'يجب تسجيل الدخول أولاً.');
         }
@@ -29,14 +29,15 @@ class RoleMiddleware
         $user = Auth::user();
 
         // التحقق من أن الحساب نشط
-        if (!$user->isActive()) {
+        if (! $user->isActive()) {
             Auth::logout();
+
             return redirect()->route('login')
                 ->with('error', 'حسابك موقوف. يرجى التواصل مع الإدارة.');
         }
 
         // التحقق من الدور
-        if (!$user->hasRole($roles)) {
+        if (! $user->hasRole($roles)) {
             // توجيه لصفحة مناسبة بدلاً من 403 مباشرة
             return redirect()->route('dashboard')
                 ->with('error', 'ليس لديك صلاحية للوصول إلى هذه الصفحة.');

@@ -46,7 +46,7 @@ class PaymobService
      */
     public function authenticate(): string
     {
-        $response = Http::post(self::BASE_URL . '/auth/tokens', [
+        $response = Http::timeout(45)->connectTimeout(15)->post(self::BASE_URL . '/auth/tokens', [
             'api_key' => $this->apiKey,
         ]);
 
@@ -80,7 +80,7 @@ class PaymobService
     ): array {
         $amountCents = (int) round($amountEGP * 100);
 
-        $response = Http::post(self::BASE_URL . '/ecommerce/orders', [
+        $response = Http::timeout(45)->connectTimeout(15)->post(self::BASE_URL . '/ecommerce/orders', [
             'auth_token'         => $authToken,
             'delivery_needed'    => false,
             'amount_cents'       => $amountCents,
@@ -144,7 +144,7 @@ class PaymobService
     ): string {
         $amountCents = (int) round($amountEGP * 100);
 
-        $response = Http::post(self::BASE_URL . '/acceptance/payment_keys', [
+        $response = Http::timeout(45)->connectTimeout(15)->post(self::BASE_URL . '/acceptance/payment_keys', [
             'auth_token'     => $authToken,
             'amount_cents'   => $amountCents,
             'expiration'     => 3600,  // صالح لساعة واحدة
@@ -193,7 +193,7 @@ class PaymobService
         // تأكد أن الرقم يبدأ بـ +20
         $phone = $this->normalizeEgyptianPhone($phoneNumber);
 
-        $response = Http::post(self::BASE_URL . '/acceptance/payments/pay', [
+        $response = Http::timeout(45)->connectTimeout(15)->post(self::BASE_URL . '/acceptance/payments/pay', [
             'source' => [
                 'identifier'   => $phone,
                 'subtype'      => 'WALLET',  // نوع المصدر: محفظة محمولة

@@ -15,19 +15,25 @@ class InstallmentController extends Controller
     /** جدول أقساط دين معين */
     public function index(Debt $debt)
     {
-        // التحقق من الصلاحية
-        if (!Auth::user()->isAdmin() && $debt->user_id !== Auth::id()) {
-            abort(403, 'غير مصرح لك بعرض هذه البيانات.');
+        if (! Auth::user()->isAdmin()) {
+            $debtorId = (int) ($debt->debtor_id ?? $debt->user_id);
+            if ($debtorId !== (int) Auth::id() && (int) $debt->lender_id !== (int) Auth::id()) {
+                abort(403, 'غير مصرح لك بعرض هذه البيانات.');
+            }
         }
 
         $installments = $debt->installments()->get();
+
         return view('installments.index', compact('debt', 'installments'));
     }
 
     /** نموذج تسجيل السداد */
     public function payForm(Installment $installment)
     {
-        if (!Auth::user()->isAdmin() && $installment->user_id !== Auth::id()) {
+        $debt = $installment->debt;
+        $debtorId = (int) ($debt->debtor_id ?? $debt->user_id);
+
+        if (! Auth::user()->isAdmin() && (int) $installment->user_id !== (int) Auth::id() && $debtorId !== (int) Auth::id()) {
             abort(403, 'غير مصرح لك بهذا الإجراء.');
         }
 
@@ -41,7 +47,10 @@ class InstallmentController extends Controller
     /** تسجيل الدفع */
     public function pay(Request $request, Installment $installment)
     {
-        if (!Auth::user()->isAdmin() && $installment->user_id !== Auth::id()) {
+        $debt = $installment->debt;
+        $debtorId = (int) ($debt->debtor_id ?? $debt->user_id);
+
+        if (! Auth::user()->isAdmin() && (int) $installment->user_id !== (int) Auth::id() && $debtorId !== (int) Auth::id()) {
             abort(403, 'غير مصرح لك بهذا الإجراء.');
         }
 
@@ -50,16 +59,16 @@ class InstallmentController extends Controller
         }
 
         $validated = $request->validate([
-            'amount'           => ['required', 'numeric', 'min:1', 'max:' . $installment->remaining_amount],
-            'payment_method'   => ['required', 'in:cash,bank_transfer,cheque'],
+            'amount' => ['required', 'numeric', 'min:1', 'max:'.$installment->remaining_amount],
+            'payment_method' => ['required', 'in:cash,bank_transfer,cheque'],
             'reference_number' => ['nullable', 'string', 'max:100'],
-            'notes'            => ['nullable', 'string', 'max:500'],
+            'notes' => ['nullable', 'string', 'max:500'],
         ], [
-            'amount.required'         => 'مبلغ الدفع مطلوب.',
-            'amount.min'              => 'أقل مبلغ للدفع هو 1.',
-            'amount.max'              => 'المبلغ المدخل يتجاوز المبلغ المتبقي للقسط.',
+            'amount.required' => 'مبلغ الدفع مطلوب.',
+            'amount.min' => 'أقل مبلغ للدفع هو 1.',
+            'amount.max' => 'المبلغ المدخل يتجاوز المبلغ المتبقي للقسط.',
             'payment_method.required' => 'طريقة الدفع مطلوبة.',
-            'payment_method.in'       => 'طريقة الدفع غير صالحة.',
+            'payment_method.in' => 'طريقة الدفع غير صالحة.',
         ]);
 
         $this->debtService->recordPayment(
@@ -71,6 +80,6 @@ class InstallmentController extends Controller
         );
 
         return redirect()->route('debts.show', $installment->debt_id)
-            ->with('success', 'تم تسجيل الدفع بنجاح. مبلغ: ' . number_format($validated['amount'], 2) . ' ج.م');
+            ->with('success', 'تم تسجيل الدفع بنجاح. المبلغ: '.number_format($validated['amount'], 2).' ج.م');
     }
 }

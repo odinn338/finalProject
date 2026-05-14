@@ -6,6 +6,7 @@ use App\Models\WalletTopup;
 use App\Services\PaymobService;
 use App\Services\WalletService;
 use Illuminate\Http\Request;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 
@@ -39,6 +40,38 @@ class WalletController extends Controller
     {
         $wallet = $this->walletService->getUserWallet(Auth::user());
         return view('wallet.topup', compact('wallet'));
+    }
+
+    /**
+     * إرجاع الرصيد الحالي بصيغة JSON (للتكامل أو العرض السريع).
+     */
+    public function showBalance(): JsonResponse
+    {
+        $wallet = $this->walletService->getUserWallet(Auth::user());
+
+        return response()->json([
+            'available_balance' => (float) $wallet->available_balance,
+            'reserved_balance'  => (float) $wallet->reserved_balance,
+            'currency'          => $wallet->currency,
+        ]);
+    }
+
+    /**
+     * نقطة دخول موحّدة لطلب الشحن حسب القناة (فودافون كاش أو تحويل يدوي).
+     */
+    public function topupRequest(Request $request)
+    {
+        $request->validate([
+            'channel' => ['required', 'in:vodafone_cash,manual_transfer'],
+        ], [
+            'channel.required' => 'يجب اختيار طريقة الشحن.',
+            'channel.in'       => 'طريقة الشحن غير مدعومة.',
+        ]);
+
+        return match ($request->string('channel')->toString()) {
+            'vodafone_cash' => $this->initiateVodafone($request),
+            default => $this->submitManual($request),
+        };
     }
 
     // ═══════════════════════════════════════════════════
@@ -210,11 +243,9 @@ class WalletController extends Controller
         if ($isSuccess && !$isPending) {
             // ✅ الدفع ناجح — أضِف الرصيد
             try {
-                $this->walletService->processGatewayTopup(
-                    user: $topup->user,
-                    amount: (float) $topup->amount,
+                $this->walletService->completeGatewayTopup(
+                    topup: $topup,
                     gatewayTransactionId: (string) ($transaction['id'] ?? ''),
-                    provider: 'paymob_vodafone',
                     rawResponse: $transaction
                 );
 
@@ -267,7 +298,7 @@ class WalletController extends Controller
             $this->walletService->approveTopup($topup, Auth::user(), $request->admin_notes);
 
             return redirect()->route('admin.wallet.topups')
-                ->with('success', "✅ تمت الموافقة. أُضيف {$topup->amount} ج.م إلى محفظة {$topup->user?->name}.");
+                ->with('success', 'تمت الموافقة على طلب الشحن وأُضيف المبلغ إلى محفظة المستخدم بنجاح.');
         } catch (\Exception $e) {
             return back()->with('error', $e->getMessage());
         }

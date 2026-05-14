@@ -147,7 +147,7 @@
                     <h3><i class="fas fa-cog" style="color:var(--primary);"></i> &nbsp;الإجراءات</h3>
                 </div>
                 <div style="display:flex;flex-direction:column;gap:10px;">
-                    <a href="{{ route('reports.debt.pdf', ['user_id' => $debt->user_id]) }}" class="btn-danger" style="justify-content:center;">
+                    <a href="{{ route('reports.debt.pdf', ['user_id' => $debt->debtor_id ?? $debt->user_id]) }}" class="btn-danger" style="justify-content:center;">
                         <i class="fas fa-file-pdf"></i> تصدير PDF
                     </a>
                     @if($canReschedule)

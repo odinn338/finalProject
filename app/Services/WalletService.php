@@ -92,7 +92,55 @@ class WalletService
     // ══════════════════════════════════════════════════════════════════
 
     /**
-     * يُنفَّذ بعد تأكيد بوابة الدفع (Webhook callback).
+     * إتمام طلب شحن كان قيد انتظار البوابة (مثل pending_gateway لـ Paymob) دون إنشاء سجل شحن مكرر.
+     *
+     * @throws \Exception
+     */
+    public function completeGatewayTopup(WalletTopup $topup, string $gatewayTransactionId, array $rawResponse): WalletTopup
+    {
+        return DB::transaction(function () use ($topup, $gatewayTransactionId, $rawResponse) {
+            /** @var WalletTopup $locked */
+            $locked = WalletTopup::query()->whereKey($topup->id)->lockForUpdate()->firstOrFail();
+
+            if ($locked->isCompleted()) {
+                return $locked;
+            }
+
+            $duplicateElsewhere = WalletTopup::query()
+                ->where('gateway_transaction_id', $gatewayTransactionId)
+                ->where('id', '!=', $locked->id)
+                ->where('status', 'completed')
+                ->exists();
+
+            if ($duplicateElsewhere) {
+                return $locked;
+            }
+
+            $wallet = $this->getUserWallet($locked->user);
+            $this->assertWalletActive($wallet);
+
+            $provider = $locked->gateway_provider ?? 'gateway';
+
+            $this->creditWallet(
+                wallet: $wallet,
+                amount: (float) $locked->amount,
+                description: "شحن عبر {$provider} — معاملة #{$gatewayTransactionId}",
+                type: 'deposit',
+                reference: $locked
+            );
+
+            $locked->update([
+                'gateway_transaction_id' => $gatewayTransactionId,
+                'gateway_response'         => $rawResponse,
+                'status'                   => 'completed',
+            ]);
+
+            return $locked->fresh();
+        });
+    }
+
+    /**
+     * يُنفَّذ بعد تأكيد بوابة الدفع (Webhook callback) عندما لا يوجد سجل طلب شحن مسبق.
      * يضيف الرصيد فوراً دون مراجعة بشرية.
      *
      * @param User   $user                المستخدم
@@ -130,7 +178,7 @@ class WalletService
                 'payment_method'         => 'gateway',
                 'gateway_transaction_id' => $gatewayTransactionId,
                 'gateway_provider'       => $provider,
-                'gateway_response'       => json_encode($rawResponse),
+                'gateway_response'       => $rawResponse,
                 'status'                 => 'completed',
             ]);
 

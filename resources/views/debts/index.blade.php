@@ -1,8 +1,8 @@
 @extends('layouts.app')
 
-@section('title', 'ديوني')
+@section('title', 'الديون')
 @section('page-title', 'قائمة الديون')
-@section('page-subtitle', 'جميع الديون المسجلة باسمك')
+@section('page-subtitle', auth()->user()->isAdmin() ? 'جميع الديون في النظام' : (auth()->user()->isCreditor() ? 'الديون التي تم تمويلها من حسابك' : 'جميع الديون المسجّلة باسمك'))
 
 @section('content')
 <div class="page-content">
@@ -46,7 +46,7 @@
                                     <div style="font-size:0.72rem;color:var(--muted);">{{ $debt->start_date->format('Y-m-d') }}</div>
                                 </td>
                                 @if(auth()->user()->isAdmin())
-                                    <td>{{ $debt->user->name }}</td>
+                                    <td>{{ $debt->borrower?->name ?? $debt->user?->name ?? '—' }}</td>
                                 @endif
                                 <td>{{ number_format($debt->principal_amount, 2) }} ج.م</td>
                                 <td style="color:var(--warning);">{{ $debt->interest_rate }}%</td>

@@ -7,6 +7,7 @@ use App\Models\DebtRequest;
 use App\Models\Installment;
 use App\Models\PaymentLog;
 use App\Models\ReschedulingRequest;
+use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
@@ -25,51 +26,52 @@ class DebtService
      *   total_amount         = principal + interest_amount
      *   monthly_installment  = total_amount / months
      *
-     * @param DebtRequest $request  طلب الدين المعتمد
-     * @param float       $rate     نسبة الفائدة %
-     * @param int         $months   عدد الأشهر
-     * @param int         $adminId  معرّف المدير الموافق
-     * @return Debt
+     * @param  DebtRequest  $request  طلب الدين المعتمد
+     * @param  float  $rate  نسبة الفائدة %
+     * @param  int  $months  عدد الأشهر
+     * @param  int  $adminId  معرّف المدير الموافق
      */
-    public function approveAndCreateDebt(DebtRequest $request, float $rate, int $months, int $adminId): Debt
+    public function approveAndCreateDebt(DebtRequest $request, float $rate, int $months, int $adminId, int $lenderId): Debt
     {
-        return DB::transaction(function () use ($request, $rate, $months, $adminId) {
+        return DB::transaction(function () use ($request, $rate, $months, $adminId, $lenderId) {
 
             // ── حساب المبالغ ─────────────────────────────
-            $principal    = $request->approved_amount ?? $request->requested_amount;
-            $interest     = round($principal * ($rate / 100), 2);
-            $total        = $principal + $interest;
-            $monthly      = round($total / $months, 2);
+            $principal = $request->approved_amount ?? $request->requested_amount;
+            $interest = round($principal * ($rate / 100), 2);
+            $total = $principal + $interest;
+            $monthly = round($total / $months, 2);
 
             // ── تعديل آخر قسط لتفادي فروق التقريب ────────
             $roundingDiff = $total - ($monthly * $months);
 
             // ── تحديث الطلب ───────────────────────────────
             $request->update([
-                'status'          => 'approved',
-                'interest_rate'   => $rate,
+                'status' => 'approved',
+                'interest_rate' => $rate,
                 'approved_months' => $months,
-                'reviewed_by'     => $adminId,
-                'reviewed_at'     => now(),
+                'reviewed_by' => $adminId,
+                'reviewed_at' => now(),
             ]);
 
             // ── إنشاء سجل الدين ───────────────────────────
             $debt = Debt::create([
-                'user_id'             => $request->user_id,
-                'debt_request_id'     => $request->id,
-                'reference_number'    => $this->generateReferenceNumber(),
-                'principal_amount'    => $principal,
-                'interest_rate'       => $rate,
-                'interest_amount'     => $interest,
-                'total_amount'        => $total,
+                'user_id' => $request->user_id,
+                'debtor_id' => $request->user_id,
+                'lender_id' => $lenderId,
+                'debt_request_id' => $request->id,
+                'reference_number' => $this->generateReferenceNumber(),
+                'principal_amount' => $principal,
+                'interest_rate' => $rate,
+                'interest_amount' => $interest,
+                'total_amount' => $total,
                 'monthly_installment' => $monthly,
-                'total_paid'          => 0,
-                'remaining_balance'   => $total,
-                'total_months'        => $months,
-                'paid_months'         => 0,
-                'start_date'          => today(),
-                'end_date'            => today()->addMonths($months),
-                'status'              => 'active',
+                'total_paid' => 0,
+                'remaining_balance' => $total,
+                'total_months' => $months,
+                'paid_months' => 0,
+                'start_date' => today(),
+                'end_date' => today()->addMonths($months),
+                'status' => 'active',
             ]);
 
             // ── توليد جدول الأقساط ────────────────────────
@@ -87,31 +89,31 @@ class DebtService
      * ينشئ سجلاً لكل قسط شهري مع تاريخ الاستحقاق
      * القسط الأخير يُضاف إليه فارق التقريب لضمان التطابق الكامل
      *
-     * @param Debt  $debt           سجل الدين
-     * @param float $monthly        القسط الشهري
-     * @param int   $months         عدد الأشهر
-     * @param float $roundingDiff   فرق التقريب يُضاف للقسط الأخير
+     * @param  Debt  $debt  سجل الدين
+     * @param  float  $monthly  القسط الشهري
+     * @param  int  $months  عدد الأشهر
+     * @param  float  $roundingDiff  فرق التقريب يُضاف للقسط الأخير
      */
     private function generateInstallments(Debt $debt, float $monthly, int $months, float $roundingDiff): void
     {
         $installments = [];
-        $startDate    = Carbon::parse($debt->start_date);
+        $startDate = Carbon::parse($debt->start_date);
 
         for ($i = 1; $i <= $months; $i++) {
             $dueDate = $startDate->copy()->addMonths($i);
-            $amount  = ($i === $months) ? round($monthly + $roundingDiff, 2) : $monthly;
+            $amount = ($i === $months) ? round($monthly + $roundingDiff, 2) : $monthly;
 
             $installments[] = [
-                'debt_id'            => $debt->id,
-                'user_id'            => $debt->user_id,
+                'debt_id' => $debt->id,
+                'user_id' => $debt->debtor_id ?? $debt->user_id,
                 'installment_number' => $i,
-                'amount'             => $amount,
-                'paid_amount'        => 0,
-                'penalty_amount'     => 0,
-                'due_date'           => $dueDate->toDateString(),
-                'status'             => 'pending',
-                'created_at'         => now(),
-                'updated_at'         => now(),
+                'amount' => $amount,
+                'paid_amount' => 0,
+                'penalty_amount' => 0,
+                'due_date' => $dueDate->toDateString(),
+                'status' => 'pending',
+                'created_at' => now(),
+                'updated_at' => now(),
             ];
         }
 
@@ -125,12 +127,11 @@ class DebtService
     /**
      * يسجّل عملية دفع لقسط معين ويحدّث أرصدة الدين
      *
-     * @param Installment $installment  القسط المراد تسديده
-     * @param float       $amount       المبلغ المدفوع
-     * @param string      $method       طريقة الدفع
-     * @param int         $recorderId   معرّف من سجّل الدفع
-     * @param string|null $reference    رقم مرجع الدفع
-     * @return PaymentLog
+     * @param  Installment  $installment  القسط المراد تسديده
+     * @param  float  $amount  المبلغ المدفوع
+     * @param  string  $method  طريقة الدفع
+     * @param  int  $recorderId  معرّف من سجّل الدفع
+     * @param  string|null  $reference  رقم مرجع الدفع
      */
     public function recordPayment(
         Installment $installment,
@@ -141,21 +142,21 @@ class DebtService
     ): PaymentLog {
         return DB::transaction(function () use ($installment, $amount, $method, $recorderId, $reference) {
 
-            $debt        = $installment->debt;
-            $totalDue    = $installment->amount + $installment->penalty_amount;
-            $newPaid     = $installment->paid_amount + $amount;
+            $debt = $installment->debt;
+            $totalDue = $installment->amount + $installment->penalty_amount;
+            $newPaid = $installment->paid_amount + $amount;
 
             // ── تحديد الحالة الجديدة للقسط ───────────────
             $newStatus = match (true) {
                 $newPaid >= $totalDue => 'paid',
-                $newPaid > 0          => 'partial',
-                default               => $installment->status,
+                $newPaid > 0 => 'partial',
+                default => $installment->status,
             };
 
             $installment->update([
                 'paid_amount' => $newPaid,
-                'status'      => $newStatus,
-                'paid_date'   => $newStatus === 'paid' ? today() : $installment->paid_date,
+                'status' => $newStatus,
+                'paid_date' => $newStatus === 'paid' ? today() : $installment->paid_date,
                 'recorded_by' => $recorderId,
             ]);
 
@@ -174,14 +175,14 @@ class DebtService
 
             // ── تسجيل سجل الدفع ─────────────────────────
             $log = PaymentLog::create([
-                'installment_id'  => $installment->id,
-                'debt_id'         => $debt->id,
-                'user_id'         => $debt->user_id,
-                'recorded_by'     => $recorderId,
-                'amount_paid'     => $amount,
-                'payment_method'  => $method,
+                'installment_id' => $installment->id,
+                'debt_id' => $debt->id,
+                'user_id' => $debt->debtor_id ?? $debt->user_id,
+                'recorded_by' => $recorderId,
+                'amount_paid' => $amount,
+                'payment_method' => $method,
                 'reference_number' => $reference,
-                'payment_date'    => now(),
+                'payment_date' => now(),
             ]);
 
             return $log;
@@ -199,11 +200,10 @@ class DebtService
      *   ج) يطبق الفائدة الجديدة على الرصيد المتبقي
      *   د) يولّد جدول أقساط جديد
      *
-     * @param ReschedulingRequest $reschedule  طلب إعادة الجدولة
-     * @param float               $newRate     نسبة الفائدة الجديدة %
-     * @param int                 $newMonths   عدد الأشهر الجديدة
-     * @param int                 $adminId     معرّف المدير
-     * @return Debt
+     * @param  ReschedulingRequest  $reschedule  طلب إعادة الجدولة
+     * @param  float  $newRate  نسبة الفائدة الجديدة %
+     * @param  int  $newMonths  عدد الأشهر الجديدة
+     * @param  int  $adminId  معرّف المدير
      */
     public function approveRescheduling(
         ReschedulingRequest $reschedule,
@@ -222,27 +222,27 @@ class DebtService
             $debt->installments()
                 ->whereIn('status', ['pending', 'overdue', 'partial'])
                 ->update([
-                    'status'     => 'voided',
+                    'status' => 'voided',
                     'updated_at' => now(),
                 ]);
 
             // ── ج) حساب القسط الجديد ─────────────────────
             //  الرصيد المتبقي هو أصل الدين الجديد
             $newInterest = round($outstandingBalance * ($newRate / 100), 2);
-            $newTotal    = $outstandingBalance + $newInterest;
-            $newMonthly  = round($newTotal / $newMonths, 2);
-            $diff        = $newTotal - ($newMonthly * $newMonths);
+            $newTotal = $outstandingBalance + $newInterest;
+            $newMonthly = round($newTotal / $newMonths, 2);
+            $diff = $newTotal - ($newMonthly * $newMonths);
 
             // ── د) تحديث سجل الدين ───────────────────────
             $debt->update([
-                'interest_rate'       => $newRate,
-                'interest_amount'     => $debt->interest_amount + $newInterest,
-                'total_amount'        => $debt->total_paid + $newTotal,
+                'interest_rate' => $newRate,
+                'interest_amount' => $debt->interest_amount + $newInterest,
+                'total_amount' => $debt->total_paid + $newTotal,
                 'monthly_installment' => $newMonthly,
-                'remaining_balance'   => $newTotal,
-                'total_months'        => $debt->paid_months + $newMonths,
-                'end_date'            => today()->addMonths($newMonths),
-                'status'              => 'active',
+                'remaining_balance' => $newTotal,
+                'total_months' => $debt->paid_months + $newMonths,
+                'end_date' => today()->addMonths($newMonths),
+                'status' => 'active',
             ]);
 
             // ── هـ) توليد جدول أقساط جديد ────────────────
@@ -250,12 +250,12 @@ class DebtService
 
             // ── و) تحديث طلب إعادة الجدولة ───────────────
             $reschedule->update([
-                'status'                  => 'approved',
-                'new_interest_rate'       => $newRate,
-                'new_months'              => $newMonths,
+                'status' => 'approved',
+                'new_interest_rate' => $newRate,
+                'new_months' => $newMonths,
                 'new_monthly_installment' => $newMonthly,
-                'reviewed_by'             => $adminId,
-                'reviewed_at'             => now(),
+                'reviewed_by' => $adminId,
+                'reviewed_at' => now(),
             ]);
 
             return $debt->fresh();
@@ -297,16 +297,26 @@ class DebtService
      */
     public function getUserDashboardStats(int $userId): array
     {
-        $debts = Debt::where('user_id', $userId)->where('status', '!=', 'completed');
+        $debts = Debt::where(function ($q) use ($userId): void {
+            $q->where('debtor_id', $userId)
+                ->orWhere(function ($q2) use ($userId): void {
+                    $q2->whereNull('debtor_id')->where('user_id', $userId);
+                });
+        })->where('status', '!=', 'completed');
 
         return [
-            'total_debt'      => $debts->sum('total_amount'),
-            'total_paid'      => $debts->sum('total_paid'),
-            'remaining'       => $debts->sum('remaining_balance'),
-            'overdue_amount'  => Installment::where('user_id', $userId)
+            'total_debt' => $debts->sum('total_amount'),
+            'total_paid' => $debts->sum('total_paid'),
+            'remaining' => $debts->sum('remaining_balance'),
+            'overdue_amount' => Installment::where('user_id', $userId)
                 ->where('status', 'overdue')
                 ->sum('amount'),
-            'active_debts'    => Debt::where('user_id', $userId)->where('status', 'active')->count(),
+            'active_debts' => Debt::where(function ($q) use ($userId): void {
+                $q->where('debtor_id', $userId)
+                    ->orWhere(function ($q2) use ($userId): void {
+                        $q2->whereNull('debtor_id')->where('user_id', $userId);
+                    });
+            })->where('status', 'active')->count(),
             'pending_requests' => DebtRequest::where('user_id', $userId)->where('status', 'pending')->count(),
             'next_installment' => Installment::where('user_id', $userId)
                 ->whereIn('status', ['pending', 'overdue'])
@@ -321,15 +331,15 @@ class DebtService
     public function getAdminDashboardStats(): array
     {
         return [
-            'total_users'          => \App\Models\User::where('role', 'user')->count(),
-            'pending_requests'     => DebtRequest::where('status', 'pending')->count(),
-            'pending_reschedule'   => ReschedulingRequest::where('status', 'pending')->count(),
-            'total_portfolio'      => Debt::where('status', '!=', 'completed')->sum('total_amount'),
-            'total_collected'      => PaymentLog::sum('amount_paid'),
-            'overdue_debts'        => Debt::where('status', 'overdue')->count(),
-            'active_debts'         => Debt::where('status', 'active')->count(),
-            'completed_debts'      => Debt::where('status', 'completed')->count(),
-            'monthly_collections'  => PaymentLog::whereMonth('payment_date', now()->month)
+            'total_users' => User::count(),
+            'pending_requests' => DebtRequest::where('status', 'pending')->count(),
+            'pending_reschedule' => ReschedulingRequest::where('status', 'pending')->count(),
+            'total_portfolio' => Debt::where('status', '!=', 'completed')->sum('total_amount'),
+            'total_collected' => PaymentLog::sum('amount_paid'),
+            'overdue_debts' => Debt::where('status', 'overdue')->count(),
+            'active_debts' => Debt::where('status', 'active')->count(),
+            'completed_debts' => Debt::where('status', 'completed')->count(),
+            'monthly_collections' => PaymentLog::whereMonth('payment_date', now()->month)
                 ->whereYear('payment_date', now()->year)
                 ->sum('amount_paid'),
         ];
@@ -345,7 +355,7 @@ class DebtService
     private function generateReferenceNumber(): string
     {
         do {
-            $ref = 'DM-' . now()->year . '-' . strtoupper(Str::random(6));
+            $ref = 'DM-'.now()->year.'-'.strtoupper(Str::random(6));
         } while (Debt::where('reference_number', $ref)->exists());
 
         return $ref;

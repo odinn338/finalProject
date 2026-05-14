@@ -3,22 +3,10 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Database\Eloquent\SoftDeletes;
 
-/**
- * نموذج المستخدم — يدعم ثلاثة أدوار: مدير · دائن · مدين
- *
- * @property int    $id
- * @property string $name
- * @property string $email
- * @property string $role          admin | creditor | debtor
- * @property string $status        active | suspended
- * @property string $kyc_status    not_submitted | pending | verified | rejected
- * @property float  $credit_score  درجة الائتمان 0-100
- * @property float  $credit_limit  الحد الائتماني الأقصى
- */
 class User extends Authenticatable
 {
     use HasFactory, Notifiable, SoftDeletes;
@@ -42,17 +30,16 @@ class User extends Authenticatable
 
     protected $casts = [
         'email_verified_at' => 'datetime',
-        'kyc_verified_at'   => 'datetime',
-        'password'          => 'hashed',
-        'credit_score'      => 'decimal:2',
-        'credit_limit'      => 'decimal:2',
+        'kyc_verified_at' => 'datetime',
+        'password' => 'hashed',
+        'credit_score' => 'decimal:2',
+        'credit_limit' => 'decimal:2',
     ];
 
     // ═══════════════════════════════════════════════════
-    //  العلاقات (Relationships)
+    //  العلاقات (Relationships) - محدثة لتطابق الكنترولرات
     // ═══════════════════════════════════════════════════
 
-    /** المحفظة الرقمية للمستخدم (واحد-لواحد) */
     public function wallet()
     {
         return $this->hasOne(Wallet::class);
@@ -64,113 +51,87 @@ class User extends Authenticatable
         return $this->hasMany(DebtRequest::class);
     }
 
-    /** الديون المرتبطة بهذا المستخدم */
-    public function debts()
-    {
-        return $this->hasMany(Debt::class);
-    }
-
-    /** الديون التي أعطاها كدائن */
+    /** الديون التي أعطاها كدائن (FIX: الربط بـ lender_id أو creditor_id حسب الكنترولر) */
     public function lentDebts()
     {
-        return $this->hasMany(Debt::class, 'creditor_id');
+        // إذا كان كلود استخدم lender_id في الكنترولر، تأكد أنها مطابقة هنا
+        return $this->hasMany(Debt::class, 'lender_id');
     }
 
-    /** الأقساط */
+    /** الديون التي اقترضها كمدين */
+    public function borrowedDebts()
+    {
+        return $this->hasMany(Debt::class, 'debtor_id');
+    }
+
+    /** ديون المدين (اسم قصير للاستخدام في الواجهات) */
+    public function debts()
+    {
+        return $this->hasMany(Debt::class, 'debtor_id');
+    }
+
     public function installments()
     {
         return $this->hasMany(Installment::class);
     }
 
-    /** طلبات شحن المحفظة */
     public function walletTopups()
     {
         return $this->hasMany(WalletTopup::class);
     }
 
-    /** حركات المحفظة */
     public function walletTransactions()
     {
         return $this->hasMany(WalletTransaction::class);
     }
 
     // ═══════════════════════════════════════════════════
-    //  Role Helpers — فحص الأدوار
+    //  Role Helpers - فحص الأدوار (مطلوبة للـ Sidebar)
     // ═══════════════════════════════════════════════════
 
     public function isAdmin(): bool
     {
         return $this->role === 'admin';
     }
+
     public function isCreditor(): bool
     {
         return $this->role === 'creditor';
     }
+
     public function isDebtor(): bool
     {
         return $this->role === 'debtor';
     }
 
-    public function hasRole(string|array $roles): bool
+    public function hasRole($roles): bool
     {
         return in_array($this->role, (array) $roles);
     }
 
     // ═══════════════════════════════════════════════════
-    //  Wallet Helpers — مساعدات المحفظة
+    //  Accessors - التسميات العربية والحسابات
     // ═══════════════════════════════════════════════════
 
-    /** الرصيد المتاح في المحفظة */
+    /** الرصيد المتاح (للعرض السريع في الـ Sidebar) */
     public function getWalletBalanceAttribute(): float
     {
         return (float) ($this->wallet?->available_balance ?? 0);
     }
 
-    /** الرصيد الكلي (متاح + محجوز) */
-    public function getWalletTotalAttribute(): float
-    {
-        $w = $this->wallet;
-        return (float) (($w?->available_balance ?? 0) + ($w?->reserved_balance ?? 0));
-    }
-
-    // ═══════════════════════════════════════════════════
-    //  Arabic Labels — التسميات العربية
-    // ═══════════════════════════════════════════════════
-
     public function getRoleArabicAttribute(): string
     {
         return match ($this->role) {
-            'admin'    => 'مدير النظام',
+            'admin' => 'مدير النظام',
             'creditor' => 'دائن (مُقرِض)',
-            'debtor'   => 'مدين (مُقترِض)',
-            default    => $this->role,
-        };
-    }
-
-    public function getRoleBadgeColorAttribute(): string
-    {
-        return match ($this->role) {
-            'admin'    => 'danger',
-            'creditor' => 'success',
-            'debtor'   => 'warning',
-            default    => 'secondary',
+            'debtor' => 'مدين (مُقترِض)',
+            default => $this->role,
         };
     }
 
     public function getStatusArabicAttribute(): string
     {
         return $this->status === 'active' ? 'نشط' : 'موقوف';
-    }
-
-    public function getKycStatusArabicAttribute(): string
-    {
-        return match ($this->kyc_status) {
-            'not_submitted' => 'لم يُقدَّم',
-            'pending'       => 'قيد المراجعة',
-            'verified'      => 'موثَّق',
-            'rejected'      => 'مرفوض',
-            default         => $this->kyc_status,
-        };
     }
 
     // ═══════════════════════════════════════════════════
@@ -180,9 +141,5 @@ class User extends Authenticatable
     public function isActive(): bool
     {
         return $this->status === 'active';
-    }
-    public function isKycVerified(): bool
-    {
-        return $this->kyc_status === 'verified';
     }
 }

@@ -11,6 +11,8 @@ class Debt extends Model
 
     protected $fillable = [
         'user_id',
+        'lender_id',
+        'debtor_id',
         'debt_request_id',
         'reference_number',
         'principal_amount',
@@ -29,15 +31,15 @@ class Debt extends Model
     ];
 
     protected $casts = [
-        'principal_amount'    => 'decimal:2',
-        'interest_rate'       => 'decimal:2',
-        'interest_amount'     => 'decimal:2',
-        'total_amount'        => 'decimal:2',
+        'principal_amount' => 'decimal:2',
+        'interest_rate' => 'decimal:2',
+        'interest_amount' => 'decimal:2',
+        'total_amount' => 'decimal:2',
         'monthly_installment' => 'decimal:2',
-        'total_paid'          => 'decimal:2',
-        'remaining_balance'   => 'decimal:2',
-        'start_date'          => 'date',
-        'end_date'            => 'date',
+        'total_paid' => 'decimal:2',
+        'remaining_balance' => 'decimal:2',
+        'start_date' => 'date',
+        'end_date' => 'date',
     ];
 
     // ═══════════════════════════════
@@ -47,6 +49,16 @@ class Debt extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function lender()
+    {
+        return $this->belongsTo(User::class, 'lender_id');
+    }
+
+    public function borrower()
+    {
+        return $this->belongsTo(User::class, 'debtor_id');
     }
 
     public function debtRequest()
@@ -85,29 +97,32 @@ class Debt extends Model
 
     public function getProgressPercentageAttribute(): float
     {
-        if ($this->total_amount <= 0) return 0;
+        if ($this->total_amount <= 0) {
+            return 0;
+        }
+
         return round(($this->total_paid / $this->total_amount) * 100, 1);
     }
 
     public function getStatusArabicAttribute(): string
     {
         return match ($this->status) {
-            'active'      => 'نشط',
-            'completed'   => 'مكتمل',
-            'overdue'     => 'متأخر',
+            'active' => 'نشط',
+            'completed' => 'مكتمل',
+            'overdue' => 'متأخر',
             'rescheduled' => 'معاد جدولته',
-            default       => $this->status,
+            default => $this->status,
         };
     }
 
     public function getStatusColorAttribute(): string
     {
         return match ($this->status) {
-            'active'      => 'primary',
-            'completed'   => 'success',
-            'overdue'     => 'danger',
+            'active' => 'primary',
+            'completed' => 'success',
+            'overdue' => 'danger',
             'rescheduled' => 'warning',
-            default       => 'secondary',
+            default => 'secondary',
         };
     }
 
@@ -115,6 +130,7 @@ class Debt extends Model
     {
         return $this->status === 'active';
     }
+
     public function isCompleted(): bool
     {
         return $this->status === 'completed';
@@ -126,7 +142,10 @@ class Debt extends Model
      */
     public function canBeRescheduled(): bool
     {
-        if (!$this->isActive()) return false;
-        return !$this->reschedulingRequests()->where('status', 'pending')->exists();
+        if (! $this->isActive()) {
+            return false;
+        }
+
+        return ! $this->reschedulingRequests()->where('status', 'pending')->exists();
     }
 }

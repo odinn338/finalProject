@@ -26,15 +26,28 @@ class ReportController extends Controller
      */
     public function exportDebtPdf(Request $request)
     {
-        $userId = Auth::user()->isAdmin() ? ($request->user_id ?? Auth::id()) : Auth::id();
-        $user   = User::findOrFail($userId);
+        $validated = $request->validate([
+            'user_id' => ['nullable', 'integer', 'exists:users,id'],
+        ]);
 
-        $debts = Debt::where('user_id', $userId)
+        $userId = Auth::user()->isAdmin()
+            ? (int) ($validated['user_id'] ?? Auth::id())
+            : (int) Auth::id();
+
+        $user = User::query()->findOrFail($userId);
+
+        $debts = Debt::query()
+            ->where(function ($q) use ($userId): void {
+                $q->where('debtor_id', $userId)
+                    ->orWhere(function ($q2) use ($userId): void {
+                        $q2->whereNull('debtor_id')->where('user_id', $userId);
+                    });
+            })
             ->with('installments', 'debtRequest')
             ->get();
 
-        $totalDebt      = $debts->sum('total_amount');
-        $totalPaid      = $debts->sum('total_paid');
+        $totalDebt = $debts->sum('total_amount');
+        $totalPaid = $debts->sum('total_paid');
         $totalRemaining = $debts->sum('remaining_balance');
 
         $pdf = app('dompdf.wrapper');
@@ -48,7 +61,8 @@ class ReportController extends Controller
 
         $pdf->setPaper('A4', 'portrait');
 
-        $filename = 'debt-summary-' . $user->id . '-' . now()->format('Ymd') . '.pdf';
+        $filename = 'debt-summary-'.$user->id.'-'.now()->format('Ymd').'.pdf';
+
         return $pdf->download($filename);
     }
 
@@ -62,7 +76,17 @@ class ReportController extends Controller
      */
     public function exportPaymentExcel(Request $request)
     {
-        $userId = Auth::user()->isAdmin() ? ($request->user_id ?? null) : Auth::id();
+        $validated = $request->validate([
+            'user_id' => ['nullable', 'integer', 'exists:users,id'],
+            'from' => ['nullable', 'date'],
+            'to' => ['nullable', 'date', 'after_or_equal:from'],
+        ], [
+            'to.after_or_equal' => 'تاريخ النهاية يجب أن يكون بعد أو يساوي تاريخ البداية.',
+        ]);
+
+        $userId = Auth::user()->isAdmin()
+            ? (isset($validated['user_id']) ? (int) $validated['user_id'] : null)
+            : (int) Auth::id();
 
         $query = PaymentLog::with('user', 'debt', 'installment', 'recorder')
             ->latest('payment_date');
@@ -71,21 +95,21 @@ class ReportController extends Controller
             $query->where('user_id', $userId);
         }
 
-        if ($request->filled('from')) {
-            $query->whereDate('payment_date', '>=', $request->from);
+        if (! empty($validated['from'])) {
+            $query->whereDate('payment_date', '>=', $validated['from']);
         }
 
-        if ($request->filled('to')) {
-            $query->whereDate('payment_date', '<=', $request->to);
+        if (! empty($validated['to'])) {
+            $query->whereDate('payment_date', '<=', $validated['to']);
         }
 
         $logs = $query->get();
 
         // بناء CSV مباشرة (بديل بسيط بدون مكتبة خارجية إضافية)
-        $filename = 'payment-log-' . now()->format('Ymd-His') . '.csv';
+        $filename = 'payment-log-'.now()->format('Ymd-His').'.csv';
 
         $headers = [
-            'Content-Type'        => 'text/csv; charset=UTF-8',
+            'Content-Type' => 'text/csv; charset=UTF-8',
             'Content-Disposition' => "attachment; filename=\"{$filename}\"",
         ];
 
@@ -137,29 +161,29 @@ class ReportController extends Controller
         $this->authorizeAdmin();
 
         $data = [
-            'total_users'     => User::where('role', 'user')->count(),
+            'total_users' => User::count(),
             'total_portfolio' => Debt::sum('total_amount'),
             'total_collected' => PaymentLog::sum('amount_paid'),
-            'active_debts'    => Debt::where('status', 'active')->count(),
-            'overdue_debts'   => Debt::where('status', 'overdue')->count(),
-            'top_debtors'     => Debt::with('user')
+            'active_debts' => Debt::where('status', 'active')->count(),
+            'overdue_debts' => Debt::where('status', 'overdue')->count(),
+            'top_debtors' => Debt::with('borrower')
                 ->where('status', 'active')
                 ->orderByDesc('remaining_balance')
                 ->limit(10)
                 ->get(),
-            'generated_at'    => now()->format('Y-m-d H:i'),
+            'generated_at' => now()->format('Y-m-d H:i'),
         ];
 
         $pdf = app('dompdf.wrapper');
         $pdf->loadView('reports.pdf.admin-summary', compact('data'));
         $pdf->setPaper('A4', 'landscape');
 
-        return $pdf->download('admin-summary-' . now()->format('Ymd') . '.pdf');
+        return $pdf->download('admin-summary-'.now()->format('Ymd').'.pdf');
     }
 
     private function authorizeAdmin(): void
     {
-        if (!Auth::user()->isAdmin()) {
+        if (! Auth::user()->isAdmin()) {
             abort(403, 'غير مصرح لك بهذا الإجراء.');
         }
     }

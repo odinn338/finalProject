@@ -63,6 +63,11 @@ class WalletTopup extends Model
     {
         return $this->status === 'pending_review';
     }
+
+    public function isPendingGateway(): bool
+    {
+        return $this->status === 'pending_gateway';
+    }
     public function isCompleted(): bool
     {
         return $this->status === 'completed';

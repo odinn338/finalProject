@@ -31,11 +31,11 @@ class WalletTransaction extends Model
     ];
 
     protected $casts = [
-        'amount'          => 'decimal:2',
-        'balance_before'  => 'decimal:2',
-        'balance_after'   => 'decimal:2',
+        'amount' => 'decimal:2',
+        'balance_before' => 'decimal:2',
+        'balance_after' => 'decimal:2',
         'reserved_before' => 'decimal:2',
-        'reserved_after'  => 'decimal:2',
+        'reserved_after' => 'decimal:2',
     ];
 
     // ═══════════════════════════════════════════════════
@@ -46,18 +46,22 @@ class WalletTransaction extends Model
     {
         return $this->belongsTo(Wallet::class);
     }
+
     public function user()
     {
         return $this->belongsTo(User::class);
     }
+
     public function counterpartWallet()
     {
         return $this->belongsTo(Wallet::class, 'counterpart_wallet_id');
     }
+
     public function counterpartUser()
     {
         return $this->belongsTo(User::class, 'counterpart_user_id');
     }
+
     public function creator()
     {
         return $this->belongsTo(User::class, 'created_by');
@@ -76,16 +80,16 @@ class WalletTransaction extends Model
     public function getTypeArabicAttribute(): string
     {
         return match ($this->type) {
-            'deposit'         => 'إيداع',
-            'withdrawal'      => 'سحب',
-            'payment_debit'   => 'دفع قسط (خصم)',
-            'payment_credit'  => 'استلام قسط (إضافة)',
-            'reserve'         => 'حجز رصيد',
-            'release'         => 'تحرير حجز',
-            'refund'          => 'استرداد',
-            'fee'             => 'رسوم منصة',
-            'adjustment'      => 'تسوية يدوية',
-            default           => $this->type,
+            'deposit' => 'إيداع',
+            'withdrawal' => 'سحب',
+            'payment_debit' => 'دفع قسط (خصم)',
+            'payment_credit' => 'استلام قسط (إضافة)',
+            'reserve' => 'حجز رصيد',
+            'release' => 'تحرير حجز',
+            'refund' => 'استرداد',
+            'fee' => 'رسوم منصة',
+            'adjustment' => 'تسوية يدوية',
+            default => $this->type,
         };
     }
 

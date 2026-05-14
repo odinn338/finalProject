@@ -751,8 +751,9 @@
     </div>
     @if(!auth()->user()->isAdmin())
     @php
-        $walletBalance = auth()->user()->wallet->available_balance ?? 0;
-        $walletReserved = auth()->user()->wallet->reserved_balance ?? 0;
+        $w = auth()->user()->wallet;
+        $walletBalance = $w?->available_balance ?? 0;
+        $walletReserved = $w?->reserved_balance ?? 0;
     @endphp
     <div class="wallet-card" style="margin: 14px 12px; background: linear-gradient(135deg, rgba(108,99,255,0.2), rgba(108,99,255,0.08)); border: 1px solid rgba(108,99,255,0.25); border-radius: 8px; padding: 14px 16px;">
         <div class="wallet-card-label" style="font-size: .72rem; color: #9ca3af; margin-bottom: 4px; display: flex; align-items: center; gap: 6px;">
@@ -807,6 +808,12 @@
                 @endif
             </a>
 
+            <a href="{{ route('admin.wallet.topups') }}"
+               class="nav-item {{ request()->routeIs('admin.wallet.*') ? 'active' : '' }}">
+                <i class="fas fa-wallet"></i>
+                <span>شحنات المحافظ</span>
+            </a>
+
             {{-- route: reports.index ─────────────────────────────── --}}
             <a href="{{ route('reports.index') }}"
                class="nav-item {{ request()->routeIs('reports.*') ? 'active' : '' }}">
@@ -816,19 +823,29 @@
 
         @else
 
+            @if(auth()->user()->isCreditor() || auth()->user()->isDebtor())
+                <a href="{{ route('wallet.index') }}"
+                   class="nav-item {{ request()->routeIs('wallet.*') ? 'active' : '' }}">
+                    <i class="fas fa-wallet"></i>
+                    <span>المحفظة</span>
+                </a>
+            @endif
+
             {{-- route: debts.index ───────────────────────────────── --}}
             <a href="{{ route('debts.index') }}"
                class="nav-item {{ request()->routeIs('debts.index') || request()->routeIs('debts.show') ? 'active' : '' }}">
                 <i class="fas fa-file-invoice-dollar"></i>
-                <span>ديوني</span>
+                <span>{{ auth()->user()->isCreditor() ? 'ديون التمويل' : 'ديوني' }}</span>
             </a>
 
-            {{-- route: debt-requests.index ──────────────────────── --}}
-            <a href="{{ route('debt-requests.index') }}"
-               class="nav-item {{ request()->routeIs('debt-requests.*') ? 'active' : '' }}">
-                <i class="fas fa-plus-circle"></i>
-                <span>طلباتي</span>
-            </a>
+            @if(auth()->user()->isDebtor())
+                {{-- route: debt-requests.index ──────────────────────── --}}
+                <a href="{{ route('debt-requests.index') }}"
+                   class="nav-item {{ request()->routeIs('debt-requests.*') ? 'active' : '' }}">
+                    <i class="fas fa-plus-circle"></i>
+                    <span>طلباتي</span>
+                </a>
+            @endif
 
             {{-- route: reports.index ─────────────────────────────── --}}
             <a href="{{ route('reports.index') }}"
@@ -875,7 +892,7 @@
                 @endif
             </button>
 
-            @if(!auth()->user()->isAdmin())
+            @if(auth()->user()->isDebtor())
                 <a href="{{ route('debt-requests.create') }}" class="btn-primary">
                     <i class="fas fa-plus"></i>
                     طلب دين جديد
@@ -898,6 +915,12 @@
             <div class="alert alert-success" style="margin-top: 20px;">
                 <i class="fas fa-check-circle"></i>
                 {{ session('success') }}
+            </div>
+        @endif
+        @if(session('info'))
+            <div class="alert alert-info" style="margin-top: 20px;">
+                <i class="fas fa-info-circle"></i>
+                {{ session('info') }}
             </div>
         @endif
         @if(session('error'))

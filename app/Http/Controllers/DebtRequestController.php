@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\DebtRequest;
+use App\Models\User;
 use App\Services\DebtService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -18,6 +19,10 @@ class DebtRequestController extends Controller
     /** قائمة طلباتي */
     public function index()
     {
+        if (! Auth::user()->isDebtor()) {
+            abort(403, 'هذه الصفحة مخصصة للمدينين فقط.');
+        }
+
         $requests = DebtRequest::where('user_id', Auth::id())
             ->latest()
             ->paginate(10);
@@ -28,30 +33,38 @@ class DebtRequestController extends Controller
     /** نموذج طلب جديد */
     public function create()
     {
+        if (! Auth::user()->isDebtor()) {
+            abort(403, 'هذه الصفحة مخصصة للمدينين فقط.');
+        }
+
         return view('debts.requests.create');
     }
 
     /** حفظ الطلب الجديد */
     public function store(Request $request)
     {
+        if (! Auth::user()->isDebtor()) {
+            abort(403, 'هذه الصفحة مخصصة للمدينين فقط.');
+        }
+
         $validated = $request->validate([
-            'title'             => ['required', 'string', 'max:255'],
-            'description'       => ['nullable', 'string', 'max:1000'],
-            'requested_amount'  => ['required', 'numeric', 'min:100', 'max:10000000'],
-            'requested_months'  => ['required', 'integer', 'min:1', 'max:120'],
+            'title' => ['required', 'string', 'max:255'],
+            'description' => ['nullable', 'string', 'max:1000'],
+            'requested_amount' => ['required', 'numeric', 'min:100', 'max:10000000'],
+            'requested_months' => ['required', 'integer', 'min:1', 'max:120'],
         ], [
-            'title.required'            => 'عنوان الطلب مطلوب.',
+            'title.required' => 'عنوان الطلب مطلوب.',
             'requested_amount.required' => 'المبلغ المطلوب مطلوب.',
-            'requested_amount.min'      => 'أقل مبلغ مقبول هو 100.',
+            'requested_amount.min' => 'أقل مبلغ مقبول هو 100.',
             'requested_months.required' => 'عدد الأشهر مطلوب.',
-            'requested_months.min'      => 'أقل مدة مقبولة شهر واحد.',
-            'requested_months.max'      => 'أقصى مدة مقبولة 120 شهراً.',
+            'requested_months.min' => 'أقل مدة مقبولة شهر واحد.',
+            'requested_months.max' => 'أقصى مدة مقبولة 120 شهراً.',
         ]);
 
         DebtRequest::create([
             ...$validated,
             'user_id' => Auth::id(),
-            'status'  => 'pending',
+            'status' => 'pending',
         ]);
 
         return redirect()->route('debt-requests.index')
@@ -61,7 +74,10 @@ class DebtRequestController extends Controller
     /** تفاصيل الطلب */
     public function show(DebtRequest $debtRequest)
     {
-        $this->authorize('view', $debtRequest);
+        if (! Auth::user()->isAdmin() && (int) $debtRequest->user_id !== (int) Auth::id()) {
+            abort(403, 'غير مصرح لك بعرض هذا الطلب.');
+        }
+
         return view('debts.requests.show', ['request' => $debtRequest]);
     }
 
@@ -79,6 +95,7 @@ class DebtRequestController extends Controller
         }
 
         $requests = $query->paginate(15);
+
         return view('admin.requests.index', compact('requests'));
     }
 
@@ -86,27 +103,46 @@ class DebtRequestController extends Controller
     public function adminShow(DebtRequest $debtRequest)
     {
         $debtRequest->load('user');
-        return view('admin.requests.show', ['request' => $debtRequest]);
+        $creditors = User::query()
+            ->where('role', 'creditor')
+            ->where('status', 'active')
+            ->orderBy('name')
+            ->get(['id', 'name', 'email']);
+
+        return view('admin.requests.show', [
+            'request' => $debtRequest,
+            'creditors' => $creditors,
+        ]);
     }
 
     /** الموافقة على الطلب وإنشاء الدين */
     public function approve(Request $request, DebtRequest $debtRequest)
     {
-        if (!$debtRequest->isPending()) {
+        if (! $debtRequest->isPending()) {
             return back()->with('error', 'هذا الطلب تمت مراجعته مسبقاً.');
         }
 
         $validated = $request->validate([
             'approved_amount' => ['required', 'numeric', 'min:1'],
-            'interest_rate'   => ['required', 'numeric', 'min:0', 'max:100'],
+            'interest_rate' => ['required', 'numeric', 'min:0', 'max:100'],
             'approved_months' => ['required', 'integer', 'min:1', 'max:120'],
-            'admin_notes'     => ['nullable', 'string', 'max:500'],
+            'lender_id' => ['required', 'integer', 'exists:users,id'],
+            'admin_notes' => ['nullable', 'string', 'max:500'],
         ], [
             'approved_amount.required' => 'المبلغ المعتمد مطلوب.',
-            'interest_rate.required'   => 'نسبة الفائدة مطلوبة.',
-            'interest_rate.max'        => 'نسبة الفائدة لا يمكن أن تتجاوز 100%.',
+            'interest_rate.required' => 'نسبة الفائدة مطلوبة.',
+            'interest_rate.max' => 'نسبة الفائدة لا يمكن أن تتجاوز 100%.',
             'approved_months.required' => 'عدد الأشهر مطلوب.',
+            'lender_id.required' => 'يجب اختيار الدائن (المقرض) المرتبط بهذا الدين.',
+            'lender_id.exists' => 'الدائن المحدد غير موجود.',
         ]);
+
+        $lender = User::query()->find($validated['lender_id']);
+        if (! $lender || ! $lender->isCreditor() || ! $lender->isActive()) {
+            return back()
+                ->withErrors(['lender_id' => 'يجب اختيار حساب دائن نشط.'])
+                ->withInput();
+        }
 
         // تحديث المبلغ المعتمد على الطلب أولاً
         $debtRequest->update(['approved_amount' => $validated['approved_amount']]);
@@ -116,7 +152,8 @@ class DebtRequestController extends Controller
             $debtRequest,
             $validated['interest_rate'],
             $validated['approved_months'],
-            Auth::id()
+            Auth::id(),
+            (int) $validated['lender_id']
         );
 
         if ($validated['admin_notes']) {
@@ -130,7 +167,7 @@ class DebtRequestController extends Controller
     /** رفض الطلب */
     public function reject(Request $request, DebtRequest $debtRequest)
     {
-        if (!$debtRequest->isPending()) {
+        if (! $debtRequest->isPending()) {
             return back()->with('error', 'هذا الطلب تمت مراجعته مسبقاً.');
         }
 
@@ -141,7 +178,7 @@ class DebtRequestController extends Controller
         ]);
 
         $debtRequest->update([
-            'status'      => 'rejected',
+            'status' => 'rejected',
             'admin_notes' => $request->admin_notes,
             'reviewed_by' => Auth::id(),
             'reviewed_at' => now(),

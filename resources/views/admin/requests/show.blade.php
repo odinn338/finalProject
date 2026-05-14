@@ -96,6 +96,13 @@
     {{-- ════ قرار المدير ════ --}}
     @if($request->isPending())
 
+        @if($creditors->isEmpty())
+            <div class="alert alert-danger" style="margin-bottom:20px;">
+                <i class="fas fa-exclamation-triangle"></i>
+                لا يوجد مستخدمون بدور «دائن» نشطون في النظام. أضف حساب دائن قبل الموافقة على الطلبات.
+            </div>
+        @endif
+
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
 
             {{-- ── الموافقة ── --}}
@@ -108,6 +115,12 @@
 
                 <form action="{{ route('admin.requests.approve', $request->id) }}" method="POST">
                     @csrf
+
+                    @if($creditors->isEmpty())
+                        <div class="alert alert-warning" style="margin-bottom:12px;font-size:0.85rem;">
+                            تعذّر الموافقة حتى يُنشأ حساب دائن نشط على الأقل.
+                        </div>
+                    @endif
 
                     <div class="form-group">
                         <label class="form-label">المبلغ المعتمد (ج.م) *</label>
@@ -145,6 +158,19 @@
                         @enderror
                     </div>
 
+                    <div class="form-group">
+                        <label class="form-label">الدائن (المقرض) المرتبط بالدين *</label>
+                        <select name="lender_id" id="inp_lender" class="form-control {{ $errors->has('lender_id') ? 'is-invalid' : '' }}" required>
+                            <option value="">— اختر الدائن —</option>
+                            @foreach($creditors as $c)
+                                <option value="{{ $c->id }}" @selected(old('lender_id') == $c->id)>{{ $c->name }} ({{ $c->email }})</option>
+                            @endforeach
+                        </select>
+                        @error('lender_id')
+                            <div class="invalid-feedback"><i class="fas fa-times-circle"></i> {{ $message }}</div>
+                        @enderror
+                    </div>
+
                     {{-- معاينة الحساب الفوري --}}
                     <div id="calc-preview"
                          style="background:rgba(46,204,113,.08);border:1px solid rgba(46,204,113,.2);
@@ -170,7 +196,7 @@
                                   placeholder="ملاحظات للمستخدم...">{{ old('admin_notes') }}</textarea>
                     </div>
 
-                    <button type="submit" class="btn-success" style="width:100%;">
+                    <button type="submit" class="btn-success" style="width:100%;" @if($creditors->isEmpty()) disabled @endif>
                         <i class="fas fa-check"></i> تأكيد الموافقة وإنشاء الأقساط
                     </button>
                 </form>
