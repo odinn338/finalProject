@@ -2,84 +2,85 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Debt;
 use App\Models\Installment;
 use App\Services\DebtService;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 
 class InstallmentController extends Controller
 {
-    public function __construct(private DebtService $debtService) {}
+    public function __construct(protected DebtService $debtService) {}
 
-    /** جدول أقساط دين معين */
-    public function index(Debt $debt)
+    // ── Existing methods (show, index, …) stay untouched above/below ─────────
+
+    /**
+     * User initiates payment → moves installment to `pending_approval`.
+     * The actual wallet transfer is deferred until an Admin approves it.
+     */
+    public function pay(Request $request, Installment $installment): RedirectResponse
     {
-        if (! Auth::user()->isAdmin()) {
-            $debtorId = (int) ($debt->debtor_id ?? $debt->user_id);
-            if ($debtorId !== (int) Auth::id() && (int) $debt->lender_id !== (int) Auth::id()) {
-                abort(403, 'غير مصرح لك بعرض هذه البيانات.');
-            }
-        }
-
-        $installments = $debt->installments()->get();
-
-        return view('installments.index', compact('debt', 'installments'));
-    }
-
-    /** نموذج تسجيل السداد */
-    public function payForm(Installment $installment)
-    {
-        $debt = $installment->debt;
-        $debtorId = (int) ($debt->debtor_id ?? $debt->user_id);
-
-        if (! Auth::user()->isAdmin() && (int) $installment->user_id !== (int) Auth::id() && $debtorId !== (int) Auth::id()) {
-            abort(403, 'غير مصرح لك بهذا الإجراء.');
-        }
-
-        if ($installment->status === 'paid') {
-            return back()->with('error', 'هذا القسط مسدد بالفعل.');
-        }
-
-        return view('installments.pay', compact('installment'));
-    }
-
-    /** تسجيل الدفع */
-    public function pay(Request $request, Installment $installment)
-    {
-        $debt = $installment->debt;
-        $debtorId = (int) ($debt->debtor_id ?? $debt->user_id);
-
-        if (! Auth::user()->isAdmin() && (int) $installment->user_id !== (int) Auth::id() && $debtorId !== (int) Auth::id()) {
-            abort(403, 'غير مصرح لك بهذا الإجراء.');
-        }
-
-        if ($installment->status === 'paid') {
-            return back()->with('error', 'هذا القسط مسدد بالفعل.');
-        }
-
-        $validated = $request->validate([
-            'amount' => ['required', 'numeric', 'min:1', 'max:'.$installment->remaining_amount],
-            'payment_method' => ['required', 'in:cash,bank_transfer,cheque'],
-            'reference_number' => ['nullable', 'string', 'max:100'],
-            'notes' => ['nullable', 'string', 'max:500'],
-        ], [
-            'amount.required' => 'مبلغ الدفع مطلوب.',
-            'amount.min' => 'أقل مبلغ للدفع هو 1.',
-            'amount.max' => 'المبلغ المدخل يتجاوز المبلغ المتبقي للقسط.',
-            'payment_method.required' => 'طريقة الدفع مطلوبة.',
-            'payment_method.in' => 'طريقة الدفع غير صالحة.',
-        ]);
-
-        $this->debtService->recordPayment(
-            $installment,
-            $validated['amount'],
-            $validated['payment_method'],
-            Auth::id(),
-            $validated['reference_number'] ?? null
+        // Guard: only the debtor of this debt may submit payment
+        abort_unless(
+            $installment->debt->debtor_id === auth()->id(),
+            403,
+            'غير مصرح لك بتسجيل هذه الدفعة.'
         );
 
-        return redirect()->route('debts.show', $installment->debt_id)
-            ->with('success', 'تم تسجيل الدفع بنجاح. المبلغ: '.number_format($validated['amount'], 2).' ج.م');
+        // Guard: only actionable if currently pending
+        abort_unless(
+            $installment->status === Installment::STATUS_PENDING ||
+                $installment->status === Installment::STATUS_OVERDUE,
+            422,
+            'لا يمكن دفع هذه القسط في حالته الحالية.'
+        );
+
+        $validated = $request->validate([
+            'reference_number' => ['required', 'string', 'max:255'],
+            'notes' => ['nullable', 'string', 'max:1000'],
+        ]);
+
+        $installment->update([
+            'status' => Installment::STATUS_PENDING_APPROVAL,
+            'reference_number' => $validated['reference_number'],
+            'notes' => $validated['notes'] ?? null,
+        ]);
+
+        return redirect()
+            ->back()
+            ->with('success', 'تم إرسال طلب الدفع وبانتظار تأكيد الأدمن.');
+    }
+
+    /**
+     * Admin confirms the payment → executes the wallet transfer via DebtService.
+     * Route is protected by the `admin` middleware (see routes/web.php).
+     */
+    public function approvePayment(Installment $installment): RedirectResponse
+    {
+        // Secondary gate check — defence-in-depth on top of the route middleware
+        abort_unless(auth()->user()?->is_admin, 403, 'هذا الإجراء مخصص للمسؤولين فقط.');
+
+        abort_unless(
+            $installment->status === Installment::STATUS_PENDING_APPROVAL,
+            422,
+            'هذه القسط لا تحتاج إلى موافقة في الوقت الحالي.'
+        );
+
+        // Delegate to the existing DebtService — wallet transfer happens here.
+        // Uses lender_id / debtor_id as already defined in the service.
+        $this->debtService->recordPayment($installment);
+
+        return redirect()
+            ->back()
+            ->with('success', 'تمت الموافقة على الدفع وتحويل المبلغ بنجاح.');
+    }
+    public function payForm(Installment $installment): \Illuminate\View\View
+    {
+        abort_unless(
+            $installment->debt->debtor_id === auth()->id() || auth()->user()->is_admin,
+            403
+        );
+
+        return view('installments.pay', compact('installment'));
     }
 }

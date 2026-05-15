@@ -118,17 +118,40 @@
                                     </td>
                                     <td><span class="badge badge-{{ $inst->status_color }}">{{ $inst->status_arabic }}</span></td>
                                     <td>{{ $inst->paid_date ? $inst->paid_date->format('Y-m-d') : '-' }}</td>
-                                    <td>
-                                        @if(in_array($inst->status, ['pending','overdue','partial']))
-                                            <a href="{{ route('installments.pay', $inst->id) }}" class="btn-success btn-sm">
-                                                <i class="fas fa-money-bill-wave"></i> سداد
-                                            </a>
-                                        @elseif($inst->status === 'paid')
-                                            <span style="color:var(--success);font-size:0.8rem;"><i class="fas fa-check-circle"></i> مسدد</span>
-                                        @else
-                                            <span style="color:var(--muted);font-size:0.8rem;">-</span>
-                                        @endif
-                                    </td>
+{{-- بعد --}}
+<td>
+    @if(in_array($inst->status, ['pending','overdue','partial']))
+        <a href="{{ route('installments.pay', $inst->id) }}" class="btn-success btn-sm">
+            <i class="fas fa-money-bill-wave"></i> سداد
+        </a>
+
+    @elseif($inst->status === 'pending_approval')
+        {{-- زرار تأكيد الدفع للأدمن فقط --}}
+        @if(auth()->user()->is_admin)
+            <form method="POST"
+                  action="{{route('admin.installments.approve', [$inst->id]) }}"
+                  onsubmit="return confirm('تأكيد الدفع وتحويل المبلغ؟')"
+                  style="display:inline;">
+                @csrf
+                <button type="submit" class="btn-success btn-sm">
+                    <i class="fas fa-check-circle"></i> تأكيد الدفع
+                </button>
+            </form>
+        @else
+            <span style="color:var(--info,#17a2b8);font-size:0.8rem;">
+                <i class="fas fa-clock"></i> بانتظار الأدمن
+            </span>
+        @endif
+
+    @elseif($inst->status === 'paid')
+        <span style="color:var(--success);font-size:0.8rem;">
+            <i class="fas fa-check-circle"></i> مسدد
+        </span>
+
+    @else
+        <span style="color:var(--muted);font-size:0.8rem;">-</span>
+    @endif
+</td>
                                 </tr>
                             @endforeach
                         </tbody>

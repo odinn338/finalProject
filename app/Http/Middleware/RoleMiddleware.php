@@ -36,7 +36,7 @@ class RoleMiddleware
                 ->with('error', 'حسابك موقوف. يرجى التواصل مع الإدارة.');
         }
 
-        // التحقق من الدور
+        // // التحقق من الدور
         if (! $user->hasRole($roles)) {
             // توجيه لصفحة مناسبة بدلاً من 403 مباشرة
             return redirect()->route('dashboard')

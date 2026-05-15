@@ -3,7 +3,7 @@
 @section('title', 'جدول الأقساط')
 @section('page-title', 'جدول الأقساط')
 @section('page-subtitle', 'دين رقم: ' . $debt->reference_number)
-
+@include('installments._actions', ['installment' => $installment])
 @section('content')
 <div class="page-content">
 
