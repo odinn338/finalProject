@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration
 {
     /**
-     * جدول المستخدمين - يدعم أدوار: مدير / مستخدم عادي
+     * جدول المستخدمين - يدعم أدوار: مدير / دائن / مدين
      */
     public function up(): void
     {
@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('phone')->nullable();
             $table->string('address')->nullable();
             $table->string('password');
-            $table->enum('role', ['admin', 'user'])->default('user');
+            $table->enum('role', ['admin', 'creditor', 'debtor'])->default('debtor');
             $table->enum('status', ['active', 'suspended'])->default('active');
             $table->decimal('credit_score', 5, 2)->default(100.00)->comment('درجة الائتمان من 100');
             $table->rememberToken();

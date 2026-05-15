@@ -3,7 +3,7 @@
 @section('title', 'جدول الأقساط')
 @section('page-title', 'جدول الأقساط')
 @section('page-subtitle', 'دين رقم: ' . $debt->reference_number)
-@include('installments._actions', ['installment' => $installment])
+
 @section('content')
 <div class="page-content">
 
@@ -117,18 +117,7 @@
                                 {{ $installment->paid_date?->format('Y-m-d') ?? '—' }}
                             </td>
                             <td>
-                                @if(in_array($installment->status, ['pending','overdue','partial']))
-                                    <a href="{{ route('installments.pay', $installment->id) }}"
-                                       class="btn-success btn-sm">
-                                        <i class="fas fa-money-bill-wave"></i> سداد
-                                    </a>
-                                @elseif($installment->status === 'paid')
-                                    <span style="color:var(--success);font-size:.82rem;">
-                                        <i class="fas fa-check-circle"></i> مسدد
-                                    </span>
-                                @else
-                                    <span style="color:var(--muted);font-size:.82rem;">—</span>
-                                @endif
+                                @include('installments._actions', ['installment' => $installment])
                             </td>
                         </tr>
                     @endforeach

@@ -54,13 +54,9 @@ Route::middleware(['auth', 'role:creditor,debtor'])->prefix('wallet')->name('wal
     Route::post('/topup/request', [WalletController::class, 'topupRequest'])->name('topup.request');
     Route::post('/topup/vodafone', [WalletController::class, 'initiateVodafone'])->name('topup.vodafone');
     Route::post('/topup/manual', [WalletController::class, 'submitManual'])->name('topup.manual');
-    Route::post(
-        '/installments/{installment}/pay',
-        [InstallmentController::class, 'pay']
-    )->name('installments.pay');
 });
 
-Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function (): void {
+Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function (): void {
     Route::get('/requests', [DebtRequestController::class, 'adminIndex'])->name('requests.index');
     Route::get('/requests/{debtRequest}', [DebtRequestController::class, 'adminShow'])->name('requests.show');
     Route::post('/requests/{debtRequest}/approve', [DebtRequestController::class, 'approve'])->name('requests.approve');
@@ -76,8 +72,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::get('/wallet/topups', [WalletController::class, 'adminTopupIndex'])->name('wallet.topups');
     Route::post('/wallet/topups/{topup}/approve', [WalletController::class, 'adminApproveTopup'])->name('wallet.topups.approve');
     Route::post('/wallet/topups/{topup}/reject', [WalletController::class, 'adminRejectTopup'])->name('wallet.topups.reject');
-    Route::post(
-        '/admin/installments/{installment}/approve',
-        [InstallmentController::class, 'approvePayment']
-    )->name('admin.installments.approve');
+
+    Route::get('/installments/pending', [InstallmentController::class, 'adminPendingIndex'])->name('installments.pending');
+    Route::post('/installments/{installment}/approve', [InstallmentController::class, 'approvePayment'])->name('installments.approve');
 });

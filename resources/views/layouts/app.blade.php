@@ -814,6 +814,16 @@
                 <span>شحنات المحافظ</span>
             </a>
 
+            <a href="{{ route('admin.installments.pending') }}"
+               class="nav-item {{ request()->routeIs('admin.installments.*') ? 'active' : '' }}">
+                <i class="fas fa-hand-holding-usd"></i>
+                <span>تأكيد مدفوعات الأقساط</span>
+                @php $navPendingPay = \App\Models\Installment::where('status', 'pending_approval')->count() @endphp
+                @if($navPendingPay > 0)
+                    <span class="nav-badge">{{ $navPendingPay }}</span>
+                @endif
+            </a>
+
             {{-- route: reports.index ─────────────────────────────── --}}
             <a href="{{ route('reports.index') }}"
                class="nav-item {{ request()->routeIs('reports.*') ? 'active' : '' }}">

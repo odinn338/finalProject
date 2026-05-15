@@ -18,13 +18,15 @@ return new class extends Migration
             }
         });
 
-        DB::statement("ALTER TABLE wallet_topups MODIFY COLUMN payment_method ENUM(
-            'gateway',
-            'bank_transfer',
-            'cash_deposit',
-            'cheque',
-            'vodafone_cash'
-        ) NOT NULL COMMENT 'طريقة الدفع المختارة'");
+        if (Schema::getConnection()->getDriverName() === 'mysql') {
+            DB::statement("ALTER TABLE wallet_topups MODIFY COLUMN payment_method ENUM(
+                'gateway',
+                'bank_transfer',
+                'cash_deposit',
+                'cheque',
+                'vodafone_cash'
+            ) NOT NULL COMMENT 'طريقة الدفع المختارة'");
+        }
     }
 
     public function down(): void
@@ -39,11 +41,13 @@ return new class extends Migration
             }
         });
 
-        DB::statement("ALTER TABLE wallet_topups MODIFY COLUMN payment_method ENUM(
-            'gateway',
-            'bank_transfer',
-            'cash_deposit',
-            'cheque'
-        ) NOT NULL COMMENT 'طريقة الدفع المختارة'");
+        if (Schema::getConnection()->getDriverName() === 'mysql') {
+            DB::statement("ALTER TABLE wallet_topups MODIFY COLUMN payment_method ENUM(
+                'gateway',
+                'bank_transfer',
+                'cash_deposit',
+                'cheque'
+            ) NOT NULL COMMENT 'طريقة الدفع المختارة'");
+        }
     }
 };

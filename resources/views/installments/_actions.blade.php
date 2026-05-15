@@ -1,4 +1,3 @@
-{{-- resources/views/installments/_actions.blade.php --}}
 {{-- $installment must be passed into this partial --}}
 
 @php
@@ -6,84 +5,42 @@
     $canPay = in_array($installment->status, [
         \App\Models\Installment::STATUS_PENDING,
         \App\Models\Installment::STATUS_OVERDUE,
-    ]);
+    ], true);
+    $debtorId = (int) ($installment->debt->debtor_id ?? $installment->debt->user_id);
 @endphp
 
-{{-- ── Status badge ─────────────────────────────────────────────────────── --}}
-<span class="badge bg-{{ $installment->status_color }}">
+<span class="badge badge-{{ $installment->status_color }}">
     {{ $installment->status_arabic }}
 </span>
 
-{{-- ── Pay button (hidden when pending_approval or already paid) ──────── --}}
-@if ($canPay && $installment->debt->debtor_id === auth()->id())
-    <button
-        type="button"
-        class="btn btn-primary btn-sm"
-        data-bs-toggle="modal"
-        data-bs-target="#payModal{{ $installment->id }}"
-    >
-        دفع القسط
-    </button>
-
-    {{-- Pay modal --}}
-    <div class="modal fade" id="payModal{{ $installment->id }}" tabindex="-1">
-        <div class="modal-dialog">
-            <form method="POST" action="{{ route('installments.pay', $installment) }}">
-                @csrf
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title">تسجيل دفع القسط</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                    </div>
-                    <div class="modal-body">
-                        <div class="mb-3">
-                            <label class="form-label">رقم المرجع / الإيصال <span class="text-danger">*</span></label>
-                            <input
-                                type="text"
-                                name="reference_number"
-                                class="form-control @error('reference_number') is-invalid @enderror"
-                                value="{{ old('reference_number') }}"
-                                required
-                            >
-                            @error('reference_number')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">ملاحظات</label>
-                            <textarea name="notes" class="form-control" rows="3">{{ old('notes') }}</textarea>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
-                        <button type="submit" class="btn btn-primary">إرسال طلب الدفع</button>
-                    </div>
-                </div>
-            </form>
-        </div>
-    </div>
+@if ($canPay && auth()->user()->isDebtor() && $debtorId === (int) auth()->id())
+    <a href="{{ route('installments.pay', ['installment' => $installment->id]) }}" class="btn-success btn-sm" style="margin-right:6px;">
+        <i class="fas fa-money-bill-wave"></i> طلب سداد
+    </a>
 @endif
 
-{{-- ── Admin "Confirm Payment" button (only for pending_approval) ──────── --}}
-@if ($isPendingApproval && auth()->user()?->role === 'admin')
+@if ($isPendingApproval && auth()->user()->isAdmin())
     <form
         method="POST"
-        action="{{ route('admin.installments.approve', $installment) }}"
-        onsubmit="return confirm('هل أنت متأكد من تأكيد الدفع وتحويل المبلغ؟')"
-        class="d-inline"
+        action="{{ route('admin.installments.approve', ['installment' => $installment->id]) }}"
+        onsubmit="return confirm('هل أنت متأكد من تأكيد الدفع وتحويل المبلغ من محفظة المدين إلى الدائن؟')"
+        style="display:inline;"
     >
         @csrf
-        <button type="submit" class="btn btn-success btn-sm">
-            <i class="fas fa-check-circle me-1"></i>
-            تأكيد الدفع
+        <button type="submit" class="btn-success btn-sm">
+            <i class="fas fa-check-circle"></i> تأكيد الدفع
         </button>
     </form>
 @endif
 
-{{-- ── Info notice for debtor while waiting ───────────────────────────── --}}
-@if ($isPendingApproval && $installment->debt->debtor_id === auth()->id())
-    <span class="text-info small">
-        <i class="fas fa-clock me-1"></i>
-        بانتظار تأكيد الأدمن
+@if ($isPendingApproval && auth()->user()->isDebtor() && $debtorId === (int) auth()->id())
+    <span style="color:var(--info);font-size:0.8rem;margin-right:6px;">
+        <i class="fas fa-clock"></i> بانتظار تأكيد الإدارة
+    </span>
+@endif
+
+@if ($installment->status === \App\Models\Installment::STATUS_PAID)
+    <span style="color:var(--success);font-size:0.8rem;">
+        <i class="fas fa-check-circle"></i> مسدد
     </span>
 @endif

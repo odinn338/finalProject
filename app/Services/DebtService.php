@@ -189,6 +189,53 @@ class DebtService
         });
     }
 
+    /**
+     * موافقة المدير على سداد قسط (بعد pending_approval):
+     * تحويل المحفظة من المدين إلى الدائن ثم تسجيل الدفع في السجلات.
+     *
+     * @throws \Exception
+     */
+    public function approveInstallmentPayment(Installment $installment, int $adminId): PaymentLog
+    {
+        if ($installment->status !== Installment::STATUS_PENDING_APPROVAL) {
+            throw new \Exception('لا يمكن الموافقة على هذا القسط في حالته الحالية.');
+        }
+
+        $installment->load('debt');
+
+        $debt = $installment->debt;
+        $debtor = User::query()->find($debt->debtor_id ?? $debt->user_id);
+        $creditor = $debt->lender_id
+            ? User::query()->find($debt->lender_id)
+            : null;
+
+        if (! $debtor || ! $creditor) {
+            throw new \Exception('تعذّر ربط الدين بالمدين أو الدائن. تحقق من lender_id و debtor_id.');
+        }
+
+        $amount = (float) $installment->remaining_amount;
+
+        if ($amount <= 0) {
+            throw new \Exception('لا يوجد مبلغ متبقٍ على هذا القسط.');
+        }
+
+        return DB::transaction(function () use ($installment, $adminId, $debtor, $creditor, $amount) {
+            app(WalletService::class)->payInstallmentFromWallet(
+                $installment,
+                $debtor,
+                $creditor
+            );
+
+            return $this->recordPayment(
+                $installment->fresh(),
+                $amount,
+                'wallet',
+                $adminId,
+                $installment->payment_reference
+            );
+        });
+    }
+
     // ════════════════════════════════════════════════════════
     //  4. الموافقة على إعادة الجدولة
     // ════════════════════════════════════════════════════════
