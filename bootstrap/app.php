@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Middleware\EnsureUserIsAdmin;
+use App\Http\Middleware\AdminMiddleware;
 use App\Http\Middleware\RoleMiddleware;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -16,11 +16,10 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->validateCsrfTokens(except: [
             'webhook/paymob',
         ]);
-        $middleware->alias([
-            'admin' => EnsureUserIsAdmin::class,
-        ]);
+
         $middleware->alias([
             'role' => RoleMiddleware::class,
+            'admin' => AdminMiddleware::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

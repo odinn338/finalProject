@@ -28,11 +28,12 @@ return new class extends Migration
             $table->date('paid_date')->nullable()->comment('تاريخ السداد الفعلي');
 
             $table->enum('status', [
-                'pending',   // لم يُسدد بعد
-                'paid',      // مسدد
-                'overdue',   // متأخر
-                'voided',    // ملغي (عند إعادة الجدولة)
-                'partial',   // مسدد جزئياً
+                'pending',            // لم يُسدد بعد
+                'pending_approval',   // بانتظار تأكيد الإدارة
+                'paid',               // مسدد
+                'overdue',            // متأخر
+                'voided',             // ملغي (عند إعادة الجدولة)
+                'partial',            // مسدد جزئياً
             ])->default('pending');
 
             $table->text('notes')->nullable();

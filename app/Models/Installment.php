@@ -2,11 +2,14 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Installment extends Model
 {
+    use HasFactory;
+
     const STATUS_PENDING = 'pending';
 
     const STATUS_PENDING_APPROVAL = 'pending_approval';   // ← NEW
@@ -26,6 +29,7 @@ class Installment extends Model
         'paid_date',
         'status',
         'notes',
+        'payment_reference',
         'recorded_by',
     ];
 
@@ -79,11 +83,13 @@ class Installment extends Model
     public function getStatusArabicAttribute(): string
     {
         return match ($this->status) {
-            self::STATUS_PENDING => 'قيد الانتظار',
-            self::STATUS_PENDING_APPROVAL => 'بانتظار تأكيد الأدمن',   // ← NEW
-            self::STATUS_PAID => 'مدفوع',
+            self::STATUS_PENDING => 'لم يُسدد',
+            self::STATUS_PENDING_APPROVAL => 'بانتظار تأكيد الإدارة',
+            self::STATUS_PAID => 'مسدد',
             self::STATUS_OVERDUE => 'متأخر',
-            default => 'غير معروف',
+            'voided' => 'ملغي',
+            'partial' => 'مسدد جزئياً',
+            default => $this->status,
         };
     }
 
@@ -91,9 +97,11 @@ class Installment extends Model
     {
         return match ($this->status) {
             self::STATUS_PENDING => 'warning',
-            self::STATUS_PENDING_APPROVAL => 'info',    // ← NEW
+            self::STATUS_PENDING_APPROVAL => 'info',
             self::STATUS_PAID => 'success',
             self::STATUS_OVERDUE => 'danger',
+            'voided' => 'secondary',
+            'partial' => 'info',
             default => 'secondary',
         };
     }

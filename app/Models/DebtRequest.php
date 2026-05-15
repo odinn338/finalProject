@@ -2,12 +2,13 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class DebtRequest extends Model
 {
-    use SoftDeletes;
+    use HasFactory, SoftDeletes;
 
     protected $fillable = [
         'user_id',
@@ -26,9 +27,9 @@ class DebtRequest extends Model
 
     protected $casts = [
         'requested_amount' => 'decimal:2',
-        'approved_amount'  => 'decimal:2',
-        'interest_rate'    => 'decimal:2',
-        'reviewed_at'      => 'datetime',
+        'approved_amount' => 'decimal:2',
+        'interest_rate' => 'decimal:2',
+        'reviewed_at' => 'datetime',
     ];
 
     // ═══════════════════════════════
@@ -57,22 +58,22 @@ class DebtRequest extends Model
     public function getStatusArabicAttribute(): string
     {
         return match ($this->status) {
-            'pending'   => 'قيد المراجعة',
-            'approved'  => 'موافق عليه',
-            'rejected'  => 'مرفوض',
+            'pending' => 'قيد المراجعة',
+            'approved' => 'موافق عليه',
+            'rejected' => 'مرفوض',
             'cancelled' => 'ملغي',
-            default     => $this->status,
+            default => $this->status,
         };
     }
 
     public function getStatusColorAttribute(): string
     {
         return match ($this->status) {
-            'pending'   => 'warning',
-            'approved'  => 'success',
-            'rejected'  => 'danger',
+            'pending' => 'warning',
+            'approved' => 'success',
+            'rejected' => 'danger',
             'cancelled' => 'secondary',
-            default     => 'secondary',
+            default => 'secondary',
         };
     }
 
@@ -80,10 +81,12 @@ class DebtRequest extends Model
     {
         return $this->status === 'pending';
     }
+
     public function isApproved(): bool
     {
         return $this->status === 'approved';
     }
+
     public function isRejected(): bool
     {
         return $this->status === 'rejected';

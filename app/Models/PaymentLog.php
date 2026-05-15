@@ -19,7 +19,7 @@ class PaymentLog extends Model
     ];
 
     protected $casts = [
-        'amount_paid'  => 'decimal:2',
+        'amount_paid' => 'decimal:2',
         'payment_date' => 'datetime',
     ];
 
@@ -46,10 +46,11 @@ class PaymentLog extends Model
     public function getPaymentMethodArabicAttribute(): string
     {
         return match ($this->payment_method) {
-            'cash'          => 'نقداً',
+            'cash' => 'نقداً',
             'bank_transfer' => 'تحويل بنكي',
-            'cheque'        => 'شيك',
-            default         => $this->payment_method,
+            'cheque' => 'شيك',
+            'wallet' => 'محفظة رقمية',
+            default => $this->payment_method,
         };
     }
 }

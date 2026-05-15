@@ -9,14 +9,22 @@ use Symfony\Component\HttpFoundation\Response;
 
 class AdminMiddleware
 {
-    /**
-     * يحمي المسارات المخصصة للمدير فقط
-     * يُعيد المستخدم العادي إلى لوحته الخاصة
-     */
     public function handle(Request $request, Closure $next): Response
     {
-        if (!Auth::check() || !Auth::user()->isAdmin()) {
+        if (! Auth::check()) {
+            return redirect()->route('login')
+                ->with('error', 'يجب تسجيل الدخول أولاً.');
+        }
+
+        if (! Auth::user()->isAdmin()) {
             abort(403, 'هذه الصفحة مخصصة للمدير فقط.');
+        }
+
+        if (! Auth::user()->isActive()) {
+            Auth::logout();
+
+            return redirect()->route('login')
+                ->with('error', 'حسابك موقوف. يرجى التواصل مع الإدارة.');
         }
 
         return $next($request);
